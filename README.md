@@ -1,4 +1,4 @@
-# COVID-19-KG-Exploration-API
+# CLARIFY-KG-Exploration-API
 
 
 
