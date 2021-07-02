@@ -80,7 +80,6 @@ curl --header "Content-Type: application/json" \
 
 
 # 6) Get the predicted interactions of all drugs types
-parameter all_drug=0 stricts the predicted interactions to only Oncological and NonOncological drugs interactions
 
 ```
 curl --header "Content-Type: application/json" \
