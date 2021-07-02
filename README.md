@@ -21,7 +21,7 @@ For example:
 
 Furthermore, the CLARIFY KG comprises pharmacodynamic interactions among drugs.  
 For example:
-**The interaction between Trazodone and Acetylsalicylic acid can increase gastrointestinal bleeding **
+**The interaction between Trazodone and Acetylsalicylic acid can increase gastrointestinal bleeding**
 
 
 # 1) Get Interactions of only Oncological and NonOncological drugs
