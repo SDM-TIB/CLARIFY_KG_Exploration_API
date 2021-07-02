@@ -100,3 +100,14 @@ curl --header "Content-Type: application/json" \
 }' \
   https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDIPS&limit=10&page=0
 ```
+# 7) DDIGroupDrugs API
+
+
+```
+curl --location --request POST 'https://labs.tib.eu/sdm/clarify-exp/ddi' \
+--header 'Content-Type: application/json' \
+--data-raw '	{
+	     "Input":{"OncologicalDrugs":["C0015133","C0079083","C0377401","C0377401","C0008838","C0078257"],"Non_OncologicalDrugs":["C0009214","C0028978","C0064636","C0207683","C1871526"]}
+
+	}'
+```
