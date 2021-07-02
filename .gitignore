@@ -6,6 +6,7 @@ __pycache__/
 # C extensions
 *.so
 
+.idea
 # Distribution / packaging
 .Python
 build/
@@ -127,3 +128,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.idea/CLARIFY_KG_Exploration_API.iml
+data/CUI_types.csv
+data/CUIs_oneLabel.csv
+data/Farmatools_pulmon.csv
+data/Non-oncologicalDrugs.csv
+temp.txt
