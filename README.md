@@ -111,3 +111,34 @@ curl --header "Content-Type: application/json" \
   https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDIPS&limit=10&page=0
 ```
 
+# 8) Get absorption of a drug
+
+
+```
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{
+   "Drugs":[
+    "C0028978",
+    "C0015846",
+    "C3657270"
+   ]
+}' \
+  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=absorption
+```
+# 9) Get mechanism of action of a drug
+
+
+```
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{
+   "Drugs":[
+    "C0028978",
+    "C0015846",
+    "C3657270"
+   ]
+}' \
+  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=MOA
+```
+
