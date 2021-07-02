@@ -46,7 +46,7 @@ Drug-Drug-Interactions with only Oncological and NonOncological drugs for the in
 ```
   "C0015846": {
             "DDI": {
-                "Symmetric": [
+                "Pharmacodynamic": [
                     {
                         "Drug1": "Trazodone",
                         "Drug2": "Fentanyl",
@@ -63,7 +63,7 @@ Drug-Drug-Interactions with only Oncological and NonOncological drugs for the in
                     },
 		    
 		    ..........
-		      "NonSymmetric": [
+		      "Pharmacokinetic": [
                     {
                         "effectorDrug": "Ertapenem",
                         "affectdDrug": "Fentanyl",
@@ -94,7 +94,7 @@ curl --header "Content-Type: application/json" \
     "C3657270"
    ]
 }' \
-  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDI&limit=10&page=0&all_drugs=0
+  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDI&all_drugs=0
 ```
 
 # 2) DDIGroupDrugs API
@@ -294,7 +294,7 @@ Drug-Drug-Interactions regardless of the type of the drugs for the input drugs
     "response": {
         "C0028978": {
             "DDI": {
-                "Symmetric": [
+                "Pharmacodynamic": [
                     {
                         "Drug1": "Omeprazole",
                         "Drug2": "Citalopram",
@@ -310,7 +310,7 @@ Drug-Drug-Interactions regardless of the type of the drugs for the input drugs
                         "description": "The risk or severity of adverse effects can be increased when Omeprazole is combined with Ropinirole."
                     }
                 ],
-                "NonSymmetric": [
+                "Pharmacokinetic": [
                     {
                         "effectorDrug": "Captopril",
                         "affectdDrug": "Omeprazole",
