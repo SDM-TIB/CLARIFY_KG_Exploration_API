@@ -251,7 +251,7 @@ list of drugs CUIs
 ```
 
 ## Output
-Drug-Drug-Interactions for all the pairs of input drugs
+Pair-wise Drug-Drug-Interactions of the input drugs without effect
 
 ```
 "('C0015846', 'C0028978')": {
@@ -300,7 +300,7 @@ list of drugs CUIs
 ```
 
 ## Output
-Predicted Drug-Drug-Interactions with only ncological and NonOncological drugs for the input drugs
+Predicted Drug-Drug-Interactions with only Oncological and NonOncological drugs for the input drugs
 
 ```
         "C0028978": {
