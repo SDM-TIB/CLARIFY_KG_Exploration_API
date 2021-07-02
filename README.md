@@ -41,7 +41,7 @@ list of drugs CUIs
 ```
 
 ## Output
-Drug-Drug-Interactions with only ncological and NonOncological drugs for the input drugs
+Drug-Drug-Interactions with only Oncological and NonOncological drugs for the input drugs
 
 ```
   "C0015846": {
