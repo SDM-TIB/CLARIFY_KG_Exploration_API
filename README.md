@@ -18,6 +18,7 @@ For example:
 Drug Serum Concentration: The amount of a drug or other compound in the circulation, both bound to proteins and unbound, the latter of which generally corresponds to the therapeutically active fraction.
 For example:
 **Codeine  can increase serum concentration of  Cisplatin**
+
 Furthermore, the CLARIFY KG comprises pharmacodynamic interactions among drugs.  
 For example:
 **The interaction between Trazodone and Acetylsalicylic acid can increase gastrointestinal bleeding **
