@@ -3,19 +3,25 @@
 The CLARIFY KG stores pharmacokinetic interactions at the absorption and excretion levels, and pharmacokinetic interactions at the drug metabolism level:
 
 Drug Absorption: Process in which a pharmaceutical substance enters into the blood circulation in the body. 
-Omeprazole can increase the absorption rate of  Raltegravir
+For example:
+**Omeprazole can increase the absorption rate of  Raltegravir**
 
 Drug Metabolism: Mechanism in which a pharmaceutical substance is transformed into other substances called metabolites in the body. 
-Omeprazole  can increase metabolism of  Etoposide
-Drug Excretion: Process in which a pharmaceutical substance is removed from the body. 
+For example:
+**Omeprazole  can increase metabolism of  Etoposide**
 
-Codeine  can decrease the excretion of  Cisplatin
+
+Drug Excretion: Process in which a pharmaceutical substance is removed from the body. 
+For example:
+**Codeine  can decrease the excretion of  Cisplatin**
 
 Drug Serum Concentration: The amount of a drug or other compound in the circulation, both bound to proteins and unbound, the latter of which generally corresponds to the therapeutically active fraction.
 
-Codeine  can increase serum concentration of  Cisplatin
+For example:
+**Codeine  can increase serum concentration of  Cisplatin**
 Furthermore, the CLARIFY KG comprises pharmacodynamic interactions among drugs.  
-The interaction between Trazodone and Acetylsalicylic acid can increase gastrointestinal bleeding 
+For example:
+**The interaction between Trazodone and Acetylsalicylic acid can increase gastrointestinal bleeding **
 
 
 # 1) Get Interactions of only Oncological and NonOncological drugs
