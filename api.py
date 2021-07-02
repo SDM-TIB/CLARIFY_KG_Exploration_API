@@ -11,8 +11,10 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 import logging
 import os
 import itertools
-import get_publication
 import csv
+from DDIGroupDrugs import ddi_Query
+from flask_cors import CORS
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -25,6 +27,7 @@ KG = os.environ["ENDPOINT"]
 EMPTY_JSON = "{}"
 
 app = Flask(__name__)
+CORS(app)
 
 
 
@@ -448,6 +451,19 @@ def proccesing_response(input_dicc, target,limit,page,all_drugs):
            
 
 
+@app.route('/ddi', methods=['POST'])
+def main_api():
+    if (not request.json):
+        abort(400)
+    input_list = request.json
+    if len(input_list) == 0:
+        r = "{results: 'Error in the input format'}"
+    else:
+        response = ddi_Query.computingDDI(input_list)
+        r = json.dumps(response, indent=4)            
+    response = make_response(r, 200)
+    response.mimetype = "application/json"
+    return response
 
 
 
@@ -478,11 +494,8 @@ def run_exploration_api():
         logger.info("Error in the input format")
         r = "{results: 'Error in the input format'}"
     else:
-        if target!="Pub":
-            response = proccesing_response(input_list,target,limit,page,all_drugs)       
-        elif target=="Pub":
-            response=get_publication.process(input_list,KG)
-    r = json.dumps(response, indent=4)  
+        response = proccesing_response(input_list,target,limit,page,all_drugs)       
+        r = json.dumps(response, indent=4)  
     logger.info("Sending the results: ")
     response = make_response(r, 200)
     response.mimetype = "application/json"

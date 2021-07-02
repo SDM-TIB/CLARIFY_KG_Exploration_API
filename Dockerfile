@@ -1,10 +1,11 @@
 FROM ubuntu:18.04
 
-WORKDIR /covid19exp
-ADD . /covid19exp
+WORKDIR /clarifyexp
+ADD . /clarifyexp
 
 RUN apt-get --assume-yes update
-RUN apt-get --assume-yes install python3 python3-flask python3-sparqlwrapper
+RUN apt-get --assume-yes install python3 python3-flask python3-sparqlwrapper python3-pip
+RUN pip3 install -U flask-cors
 
 
 # Make port 5000 available to the world outside this container
