@@ -19,6 +19,7 @@ curl --header "Content-Type: application/json" \
 
 # 2) DDIGroupDrugs API
 
+## Post request example
 
 ```
 curl --location --request POST 'https://labs.tib.eu/sdm/clarify-exp/ddi' \
