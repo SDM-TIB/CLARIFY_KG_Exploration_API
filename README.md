@@ -456,6 +456,8 @@ curl --header "Content-Type: application/json" \
 
 # 8) Get absorption of a drug
 
+Drug Absorption: Process in which a pharmaceutical substance enters into the blood circulation in the body. 
+
 ## Input 
 
 list of drugs CUIs
@@ -499,6 +501,8 @@ curl --header "Content-Type: application/json" \
   https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=absorption
 ```
 # 9) Get mechanism of action of a drug
+
+Drug Metabolism: Mechanism in which a pharmaceutical substance is transformed into other substances called metabolites in the body. 
 
 ## Input 
 
