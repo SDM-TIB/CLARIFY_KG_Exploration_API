@@ -21,7 +21,7 @@ logger.setLevel(logging.INFO)
 
 
 
-os.environ["ENDPOINT"]='https://labs.tib.eu/sdm/clarify-kg-5-1/sparql'
+#os.environ["ENDPOINT"]='https://labs.tib.eu/sdm/clarify-kg-5-1/sparql'
 KG = os.environ["ENDPOINT"]
 #KG= 'http://node2.research.tib.eu:11284/sparql/'
 EMPTY_JSON = "{}"

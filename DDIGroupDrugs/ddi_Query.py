@@ -177,13 +177,17 @@ def WriteDrugEffects(IDB,Labels):
     for  key in IDB:
         for ddi in IDB[key]:
             listEffects[ddi]=[]
-            for exp in IDB[key][ddi].ddiWHY:
+            setExplanation=set(IDB[key][ddi].ddiWHY)
+            listExplanation=list(setExplanation)
+            for exp in listExplanation:
                 if key=="Toxicity_Increase":
-                    listEffects[ddi].append("The toxicity of  " + Labels[str(ddi)] +  " can be increased because " +  str(exp))
-                    #print("The toxicity of  " + Labels[str(ddi)] +  " is increased because " + str(exp))
+                    explanation="The toxicity of  " + Labels[str(ddi)] +  " can be increased because " +  str(exp)
+                    listEffects[ddi].append(explanation)
+                       #print("The toxicity of  " + Labels[str(ddi)] +  " is increased because " + str(exp))
                 else:
-                    listEffects[ddi].append("The effectiveness of  " +  Labels[str(ddi)] +  " can be decreased because " + str(exp)) 
-                    #print("The effectiveness of  " + Labels[str(ddi)] +  " is decreased because " + str(exp) )
+                    explanation="The effectiveness of  " +  Labels[str(ddi)] +  " can be decreased because " + str(exp)
+                    listEffects[ddi].append(explanation) 
+                       #print("The effectiveness of  " + Labels[str(ddi)] +  " is decreased because " + str(exp) )
     return listEffects
 
 def createJSON(SetOfDDIs,DrugEffects):
