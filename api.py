@@ -21,7 +21,7 @@ logger.setLevel(logging.INFO)
 
 
 
-
+os.environ["ENDPOINT"]='https://labs.tib.eu/sdm/clarify-kg-5-1/sparql'
 KG = os.environ["ENDPOINT"]
 #KG= 'http://node2.research.tib.eu:11284/sparql/'
 EMPTY_JSON = "{}"
@@ -345,8 +345,8 @@ def proccesing_response(input_dicc, target,limit,page,all_drugs):
                     if len(query_reslut)>0:
                         #drugInteractions[drug]["Label"]=query_reslut[0]["affectdDrugLabel"]["value"]
                         drugInteractions[drug]["DDI"]=dict()
-                        drugInteractions[drug]["DDI"]["Symmetric"]=[]
-                        drugInteractions[drug]["DDI"]["NonSymmetric"]=[]
+                        drugInteractions[drug]["DDI"]["Pharmacodynamic"]=[]
+                        drugInteractions[drug]["DDI"]["Pharmacokinetic"]=[]
                         for result in query_reslut:
                             if all_drugs==0:
                                 if not (result["effectorDrugCUI"]["value"]  in consideredDrugs and result["affectdDrugCUI"]["value"] in consideredDrugs) :
@@ -358,14 +358,14 @@ def proccesing_response(input_dicc, target,limit,page,all_drugs):
                                 interaction["effect"]=result["adverse"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
                                 interaction["impact"]=result["impact"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
                                 interaction["description"]=result["description"]["value"]
-                                drugInteractions[drug]["DDI"]["Symmetric"].append(interaction)
+                                drugInteractions[drug]["DDI"]["Pharmacodynamic"].append(interaction)
                             else:     
                                 interaction["effectorDrug"]=result["effectorDrugLabel"]["value"]
                                 interaction["affectdDrug"]=result["affectdDrugLabel"]["value"]
                                 interaction["effect"]=result["adverse"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
                                 interaction["impact"]=result["impact"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
                                 interaction["description"]=result["description"]["value"]
-                                drugInteractions[drug]["DDI"]["NonSymmetric"].append(interaction)
+                                drugInteractions[drug]["DDI"]["Pharmacokinetic"].append(interaction)
                 results['response']=drugInteractions
             elif target=="DDIS":
                 drugs_pairs=[(x,y) for x,y in list(itertools.product(lcuis, lcuis)) if x!=y and x<y]
