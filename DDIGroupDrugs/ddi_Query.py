@@ -1,5 +1,8 @@
-from SPARQLWrapper import SPARQLWrapper, JSON
 import os
+import re
+import sys
+import json
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 class iddDescription:
  
@@ -68,7 +71,7 @@ def CreateEDB(OncologicalDrugs,Non_OncologicalDrugs,SPARQLEndpoint,EDB,Prefix):
     ?s <http://clarify2020.eu/vocab/object_drug_cui> ?objectDrug 
     FILTER (?precipitantDrug in (""" + listDrugs + """ ) && ?objectDrug in (""" + listDrugs +  """))}\n"""
 
-    #print(query)
+    print(query)
     sparql = SPARQLWrapper(SPARQLEndpoint)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
@@ -142,8 +145,8 @@ def InductiveCaseIDB(IDB,ddiType):
             for drug2 in IDB[ddiType]:
                 #print(str(drug1) + " dependendencies Drug2 " + str(IDB[ddiType][drug2].dependencies) +  " dependendencies Drug1 " + str(IDB[ddiType][drug1].dependencies) +  " WHY " + str(IDB[ddiType][drug1].ddiWHY))
                 if ((drug1 in IDB[ddiType][drug2].dependencies) and
-                   not(set(IDB[ddiType][drug1].dependencies).issubset(set(IDB[ddiType][drug2].dependencies))) and
-                   not(set(IDB[ddiType][drug1].ddiWHY).issubset(set(IDB[ddiType][drug2].ddiWHY)))):
+                   (not(set(IDB[ddiType][drug1].dependencies).issubset(set(IDB[ddiType][drug2].dependencies))) or
+                    not(set(IDB[ddiType][drug1].ddiWHY).issubset(set(IDB[ddiType][drug2].ddiWHY))))):
                         IDB[ddiType][drug2].dependencies += IDB[ddiType][drug1].dependencies
                         IDB[ddiType][drug2].ddiWHY  += IDB[ddiType][drug1].ddiWHY
                         fix_poitnt=False
@@ -176,18 +179,15 @@ def WriteDrugEffects(IDB,Labels):
     listEffects=dict()
     for  key in IDB:
         for ddi in IDB[key]:
-            listEffects[ddi]=[]
-            setExplanation=set(IDB[key][ddi].ddiWHY)
-            listExplanation=list(setExplanation)
-            for exp in listExplanation:
+            if ddi not in listEffects:
+                listEffects[ddi]=[]
+            for exp in IDB[key][ddi].ddiWHY:
                 if key=="Toxicity_Increase":
-                    explanation="The toxicity of  " + Labels[str(ddi)] +  " can be increased because " +  str(exp)
-                    listEffects[ddi].append(explanation)
-                       #print("The toxicity of  " + Labels[str(ddi)] +  " is increased because " + str(exp))
+                    listEffects[ddi].append("The toxicity of  " + Labels[str(ddi)] +  " can be increased because " +  str(exp))
+                    #print("The toxicity of  " + Labels[str(ddi)] +  " is increased because " + str(exp))
                 else:
-                    explanation="The effectiveness of  " +  Labels[str(ddi)] +  " can be decreased because " + str(exp)
-                    listEffects[ddi].append(explanation) 
-                       #print("The effectiveness of  " + Labels[str(ddi)] +  " is decreased because " + str(exp) )
+                    listEffects[ddi].append("The effectiveness of  " +  Labels[str(ddi)] +  " can be decreased because " + str(exp)) 
+                    #print("The effectiveness of  " + Labels[str(ddi)] +  " is decreased because " + str(exp) )
     return listEffects
 
 def createJSON(SetOfDDIs,DrugEffects):
@@ -239,7 +239,7 @@ def computingDDI(input_file):
         input_data = input_file
         onco_drugs=input_data["Input"]["OncologicalDrugs"]
         non_onco_drugs=input_data["Input"]["Non_OncologicalDrugs"]
-        return DDIs_Group_Drugs(onco_drugs,non_onco_drugs,os.environ["ENDPOINT"],"http://clarify2020.eu")
+        return DDIs_Group_Drugs(onco_drugs,non_onco_drugs,"https://labs.tib.eu/sdm/clarify-kg-5-1/sparql","http://clarify2020.eu")
 
 if __name__ == '__main__':
     x=1
