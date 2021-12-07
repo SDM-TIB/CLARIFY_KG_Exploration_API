@@ -7,7 +7,7 @@
 import sys
 from flask import Flask, abort, request, make_response , render_template
 import json
-from SPARQLWrapper import SPARQLWrapper, JSON
+from SPARQLWrapper import SPARQLWrapper, JSON, POST
 import logging
 import os
 import itertools
@@ -23,7 +23,7 @@ logger.setLevel(logging.INFO)
 
 #os.environ["ENDPOINT"]='https://labs.tib.eu/sdm/clarify-kg-5-1/sparql'
 KG = os.environ["ENDPOINT"]
-#KG= 'http://node2.research.tib.eu:11284/sparql/'
+#KG= 'http://node2.research.tib.eu:11287/sparql/'
 EMPTY_JSON = "{}"
 
 app = Flask(__name__)
@@ -63,7 +63,7 @@ for row in rows:
 
 QUERY_DRUG_TO_DRUGS_INTERACTIONS ="""
 SELECT * {{
-{{SELECT DISTINCT ?effectorDrugCUI ?affectdDrugCUI  ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact 'Symmetric' AS ?type ?description   WHERE {{  
+{{SELECT  ?effectorDrugCUI ?affectdDrugCUI  ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact 'Symmetric' AS ?type ?description   WHERE {{  
                                            ?interaction_symm a <http://clarify2020.eu/vocab/SymmetricDrugDrugInteraction>. 
                                            ?interaction a <http://clarify2020.eu/vocab/DrugDrugInteraction>.
                                            ?interaction_symm ?p ?interaction.
@@ -78,7 +78,7 @@ SELECT * {{
                                             {0}
 UNION
 {{
-SELECT DISTINCT ?effectorDrugCUI ?affectdDrugCUI ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact 'Symmetric' AS ?type ?description   WHERE {{  
+SELECT  ?effectorDrugCUI ?affectdDrugCUI ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact 'Symmetric' AS ?type ?description   WHERE {{  
                                            ?interaction_symm a <http://clarify2020.eu/vocab/SymmetricDrugDrugInteraction>. 
                                            ?interaction a <http://clarify2020.eu/vocab/DrugDrugInteraction>.
                                            ?interaction_symm ?p ?interaction.
@@ -93,7 +93,7 @@ SELECT DISTINCT ?effectorDrugCUI ?affectdDrugCUI ?effectorDrugLabel ?affectdDrug
                                             {1}
 UNION
 {{ 
-    SELECT DISTINCT ?effectorDrugCUI ?affectdDrugCUI ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact 'NonSymmetric' AS ?type ?description   WHERE {{  
+    SELECT  ?effectorDrugCUI ?affectdDrugCUI ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact 'NonSymmetric' AS ?type ?description   WHERE {{  
                                            ?interaction_notsymm a <http://clarify2020.eu/vocab/NonSymmetricDrugDrugInteraction>. 
                                            ?interaction a <http://clarify2020.eu/vocab/DrugDrugInteraction>.
                                            ?interaction_notsymm ?p ?interaction.
@@ -108,7 +108,7 @@ UNION
                                             {2}      
 UNION
 {{ 
-    SELECT DISTINCT ?effectorDrugCUI ?affectdDrugCUI ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact 'NonSymmetric' AS ?type ?description   WHERE {{  
+    SELECT  ?effectorDrugCUI ?affectdDrugCUI ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact 'NonSymmetric' AS ?type ?description   WHERE {{  
                                            ?interaction_notsymm a <http://clarify2020.eu/vocab/NonSymmetricDrugDrugInteraction>. 
                                            ?interaction a <http://clarify2020.eu/vocab/DrugDrugInteraction>.
                                            ?interaction_notsymm ?p ?interaction.
@@ -125,7 +125,7 @@ UNION
 
 
 QUERY_DRUG_TO_DRUGS_INTERACTIONS_PREDICTED ="""
-SELECT DISTINCT ?affectdDrugCUI ?effectorDrugCUI  ?effectorDrugLabel ?affectdDrugLabel ?confidence ?provenance WHERE {  
+SELECT  * WHERE {  
                                            ?interaction a <http://clarify2020.eu/vocab/DrugDrugPrediction>.
                                            ?interaction <http://clarify2020.eu/vocab/interactor1> ?effectorDrug.
                                            ?interaction <http://clarify2020.eu/vocab/interactor2> ?affectdDrug.
@@ -140,8 +140,8 @@ SELECT DISTINCT ?affectdDrugCUI ?effectorDrugCUI  ?effectorDrugLabel ?affectdDru
 """
 
 QUERY_DRUGS_TO_DRUGS_INTERACTIONS ="""
-SELECT * {{
-{{SELECT DISTINCT ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact ?description  WHERE {{
+SELECT DISTINCT * {{
+{{SELECT  ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact ?description  WHERE {{
                                            ?interaction a <http://clarify2020.eu/vocab/DrugDrugInteraction>.
                                            ?interaction <http://clarify2020.eu/vocab/precipitant_drug_cui> <http://clarify2020.eu/entity/{0}>.
                                            ?interaction <http://clarify2020.eu/vocab/object_drug_cui> <http://clarify2020.eu/entity/{1}>.
@@ -153,7 +153,7 @@ SELECT * {{
                                             ?interaction <http://clarify2020.eu/vocab/ddi_description> ?description.
    
 }}}} UNION 
-{{SELECT DISTINCT ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact ?description WHERE {{  
+{{SELECT  ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact ?description WHERE {{  
                                            ?interaction a <http://clarify2020.eu/vocab/DrugDrugInteraction>.
                                            ?interaction <http://clarify2020.eu/vocab/precipitant_drug_cui> <http://clarify2020.eu/entity/{1}>.
                                            ?interaction <http://clarify2020.eu/vocab/object_drug_cui> <http://clarify2020.eu/entity/{0}>.
@@ -228,8 +228,9 @@ select distinct  ?drug ?drugLabel ?absorption WHERE
 def execute_query(query,limit,page):
     if limit!=0:
        query+="LIMIT "+str(limit)
-    query+=" OFFSET "+str(page)   
+    query+=" OFFSET "+str(page) 
     sparql_ins = SPARQLWrapper(KG)
+    sparql_ins.setMethod(POST)
     sparql_ins.setQuery(query)
     sparql_ins.setReturnFormat(JSON)
     return sparql_ins.query().convert()['results']['bindings']
@@ -245,28 +246,60 @@ def execute_query(query,limit,page):
 def drug2_interactions_query(drug,limit,page,all_drugs):
     query_1=""
 
+    
         
     query_1+="FILTER(?affectdDrugCUI in ("
-    query_1+="<http://clarify2020.eu/entity/"+drug+">"
-    query_1+="))}}"
+    query_1+="<http://clarify2020.eu/entity/"+drug+">))"
+    
+    if all_drugs==0:
+        query_1+="FILTER(?effectorDrugCUI in ("
+        for drug in consideredDrugs:
+            query_1+="<"+drug+">,"
+        query_1=query_1[:-1]
+        query_1+="))"
+
+    
+    query_1+="}}"
     
     
     
+    
+   
     query_2=""
 
 
         
     query_2+="FILTER(?effectorDrugCUI in ("
-    query_2+="<http://clarify2020.eu/entity/"+drug+">"
-    query_2+="))}}"
+    query_2+="<http://clarify2020.eu/entity/"+drug+">))"
     
+    if all_drugs==0:
+        query_2+="FILTER(?affectdDrugCUI in ("
+        for drug in consideredDrugs:
+            query_2+="<"+drug+">,"
+        query_2=query_2[:-1]
+        query_2+="))"
+ 
+    query_2+="}}"
     
+
     query_3=""
  
         
     query_3+="FILTER(?affectdDrugCUI in ("
-    query_3+="<http://clarify2020.eu/entity/"+drug+">"
-    query_3+="))}}"
+    query_3+="<http://clarify2020.eu/entity/"+drug+">))"
+    
+    if all_drugs==0:
+        query_3+="FILTER(?effectorDrugCUI in ("
+        for drug in consideredDrugs:
+            query_3+="<"+drug+">,"
+        query_3=query_3[:-1]
+        query_3+="))"
+
+
+    query_3+="}}"
+    
+    
+  
     
     
     
@@ -274,8 +307,19 @@ def drug2_interactions_query(drug,limit,page,all_drugs):
   
         
     query_4+="FILTER(?effectorDrugCUI in ("
-    query_4+="<http://clarify2020.eu/entity/"+drug+">"
-    query_4+="))}}}"
+    query_4+="<http://clarify2020.eu/entity/"+drug+">))"
+    
+    if all_drugs==0:
+        query_4+="FILTER(?affectdDrugCUI in ("
+        for drug in consideredDrugs:
+            query_4+="<"+drug+">,"
+        query_4=query_4[:-1]
+        query_4+="))"
+
+
+    query_4+="}}}"
+    
+ 
     
 
        
@@ -285,10 +329,18 @@ def drug2_interactions_query(drug,limit,page,all_drugs):
     return qresults
 
 
-def drug2_interactions_predicted_query(drug,limit,page):
+def drug2_interactions_predicted_query(drug,limit,page,all_drugs):
     query=QUERY_DRUG_TO_DRUGS_INTERACTIONS_PREDICTED
     query+="FILTER(?affectdDrugCUI in ("
     query+="<http://clarify2020.eu/entity/"+drug+">"
+    
+    '''if all_drugs==0:
+        query+=","
+        for drug in consideredDrugs:
+            query+="<"+drug+">,"
+        query=query[:-1]'''
+        
+    
     query+="))}"
         
     qresults = execute_query(query,limit,page)
@@ -348,9 +400,9 @@ def proccesing_response(input_dicc, target,limit,page,all_drugs):
                         drugInteractions[drug]["DDI"]["Pharmacodynamic"]=[]
                         drugInteractions[drug]["DDI"]["Pharmacokinetic"]=[]
                         for result in query_reslut:
-                            if all_drugs==0:
-                                if not (result["effectorDrugCUI"]["value"]  in consideredDrugs and result["affectdDrugCUI"]["value"] in consideredDrugs) :
-                                    continue
+                            #if all_drugs==0:
+                                #if not (result["effectorDrugCUI"]["value"]  in consideredDrugs and result["affectdDrugCUI"]["value"] in consideredDrugs) :
+                                    #continue
                             interaction=dict()
                             if result["type"]["value"]=='Symmetric':
                                 interaction["Drug1"]=result["effectorDrugLabel"]["value"]
@@ -388,7 +440,7 @@ def proccesing_response(input_dicc, target,limit,page,all_drugs):
             elif target=="DDIP":
                 #drugs_pairs=[(x,y) for x,y in list(itertools.product(lcuis, lcuis)) if x!=y]
                 for drug in lcuis:
-                    query_reslut=drug2_interactions_predicted_query(drug,limit,page)
+                    query_reslut=drug2_interactions_predicted_query(drug,limit,page,all_drugs)
                     drugInteractions[drug]=dict()
                     if len(query_reslut)>0:
                         drugInteractions[drug]["Label"]=query_reslut[0]["affectdDrugLabel"]["value"]
