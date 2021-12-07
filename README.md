@@ -94,7 +94,7 @@ curl --header "Content-Type: application/json" \
     "C3657270"
    ]
 }' \
-  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDI&all_drugs=0
+  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDI&all_drugs=0&limit=10&page=0
 ```
 
 # 2) DDIGroupDrugs API
@@ -339,7 +339,7 @@ curl --header "Content-Type: application/json" \
     "C3657270"
    ]
 }' \
-  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDIS&all_drugs=1
+  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDI&all_drugs=1&limit=10&page=0
 ```
 
 # 6) Get all the interaction among the provided Drugs
@@ -443,7 +443,7 @@ curl --header "Content-Type: application/json" \
     "C0052796"
    ]
 }' \
-  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDIP&all_drugs=0
+  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDIP&all_drugs=0&limit=10&page=0
 ```
 
 
