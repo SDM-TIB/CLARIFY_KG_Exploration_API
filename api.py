@@ -23,7 +23,7 @@ logger.setLevel(logging.INFO)
 
 #os.environ["ENDPOINT"]='https://labs.tib.eu/sdm/clarify-kg-5-1/sparql'
 KG = os.environ["ENDPOINT"]
-#KG= 'http://node2.research.tib.eu:11287/sparql/'
+#KG= 'http://node2.research.tib.eu:11290/sparql'
 EMPTY_JSON = "{}"
 
 app = Flask(__name__)
@@ -548,6 +548,35 @@ def run_exploration_api():
     else:
         response = proccesing_response(input_list,target,limit,page,all_drugs)       
         r = json.dumps(response, indent=4)  
+    logger.info("Sending the results: ")
+    response = make_response(r, 200)
+    response.mimetype = "application/json"
+    return response
+
+
+def get_oncological_drugs_query():
+    query="""select distinct ?drugLabel ?cui where 
+{?drug a <http://clarify2020.eu/vocab/OncologicalDrug>.
+?drug <http://clarify2020.eu/vocab/drugLabel> ?drugLabel.
+?drug <http://clarify2020.eu/vocab/hasCUIAnnotation> ?ann.
+?ann <http://clarify2020.eu/vocab/annID> ?cui.
+} 
+    """
+    qresults = execute_query(query,0,0)
+    finalresult=[]
+    for result in qresults:
+        item={}
+        item["label"]=result["drugLabel"]["value"].replace("_"," ")
+        item["cui"]=result["cui"]["value"]
+        finalresult.append(item)
+        
+    return finalresult
+
+@app.route('/get_oncological_drugs', methods=['GET'])
+def get_oncological_drugs():
+    response=dict()
+    response['Oncological_Drugs'] = get_oncological_drugs_query()
+    r = json.dumps(response, indent=4)            
     logger.info("Sending the results: ")
     response = make_response(r, 200)
     response.mimetype = "application/json"
