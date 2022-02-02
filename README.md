@@ -583,3 +583,42 @@ curl --header "Content-Type: application/json" \
 }' \
   https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDIPS&limit=10&page=0
 ```
+
+# 10) Get all Oncological Drugs
+
+
+## Output
+A list of all Oncological Drugs in the KG.
+The drug label and CUI id is provided for each drug
+
+```
+{
+    "Oncological_Drugs": [
+        {
+            "label": "Cisplatin",
+            "cui": "C0008838"
+        },
+        {
+            "label": "Etoposide",
+            "cui": "C0015133"
+        },
+        {
+            "label": "Gemcitabine",
+            "cui": "C0045093"
+        },
+        {
+            "label": "Dabrafenib",
+            "cui": "C3467876"
+        }
+	]
+}	
+```
+
+## POST request example
+
+```
+curl --header "Content-Type: application/json" \
+  --request POST \
+  https://labs.tib.eu/sdm/clarify-exp/get_oncological_drugs
+```
+
