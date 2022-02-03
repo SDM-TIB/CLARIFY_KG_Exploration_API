@@ -7,6 +7,6 @@ docker stop clarify_exploration_api
 
 docker rm clarify_exploration_api 
 
-docker run -d --name clarify_exploration_api -p 18874:5000 -e ENDPOINT='http://node2.research.tib.eu:11290/sparql' sdmtib/clarify_exploration:1.8
+docker run -d --name clarify_exploration_api -p 18874:5000 -e ENDPOINT='http://node2.research.tib.eu:11291/sparql' sdmtib/clarify_exploration:1.8
 
 docker image pull sdmtib/clarify_exploration:1.8
