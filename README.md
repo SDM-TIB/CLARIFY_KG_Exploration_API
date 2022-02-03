@@ -614,7 +614,7 @@ The drug label and CUI id is provided for each drug
 }	
 ```
 
-## POST request example
+## GET request example
 
 ```
 curl --header "Content-Type: application/json" \
