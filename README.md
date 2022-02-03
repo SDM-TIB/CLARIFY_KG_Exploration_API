@@ -643,6 +643,8 @@ The wedge rate centred at each drug is computed by:
 The wedge rate represents drugs whose presence in the treatment may negatively impact effectiveness and toxicity.
 Higher values in wedge rate mean drugs that correspond to the middle vertex of several wedges and may negatively impact the treatment.
 
+A toxic drug is computed in terms of how many times this drug is a middle-vertex of the wedges in the directed graph that represent the interactions between the drugs of treatment.
+
 - Based on the paper: [Capturing Knowledge about Drug-Drug Interactions to Enhance Treatment Effectiveness](https://doi.org/10.1145/3460210.3493560).
 ## Input
 List of CUIs for Oncological and NonOncological drugs
