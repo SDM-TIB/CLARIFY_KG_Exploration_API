@@ -204,10 +204,10 @@ def discovering_knowledge(adverse_event, union, set_dsd_label, comorbidity_drug)
     ddi_type = plot_ddi.Effect_Impact.unique()
     dict_frequency, dict_frequency_k = computing_wedge(comorbidity_drug.union(set_dsd_label), ddi_type)
     dict_frequency = dict(sorted(dict_frequency.items(), key=lambda item: item[1], reverse=True))
-    dict_wedge['wedge_rate'] = dict_frequency
-    dict_wedge['max_wedge'] = max(dict_frequency, key=dict_frequency.get)
+    dict_wedge['toxicity_rate'] = dict_frequency
+    dict_wedge['most_toxic_drug'] = max(dict_frequency, key=dict_frequency.get)
 
     dict_frequency_k = dict(sorted(dict_frequency_k.items(), key=lambda item: item[1], reverse=True))
-    dict_wedge['wedge_pharmacokinetic_rate'] = dict_frequency_k
-    dict_wedge['max_wedge_pharmacokinetic'] = max(dict_frequency_k, key=dict_frequency_k.get)
+    dict_wedge['pharmacokinetic_toxicity_rate'] = dict_frequency_k
+    dict_wedge['most_toxic_drug_pharmacokinetic'] = max(dict_frequency_k, key=dict_frequency_k.get)
     return dict_wedge

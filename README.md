@@ -653,11 +653,11 @@ List of CUIs for Oncological and NonOncological drugs
 	}
 ```
 ## Output
-Wedge rate for each drug, and the drug with higher wedge rate. 
+Toxicity rate for each drug, and the most toxic drug. 
 
 ```
 {
-    "wedge_rate": {
+    "toxicity_rate": {
         "cisplatin": 0.39285714285714285,
         "nafamostat": 0.32589285714285715,
         "carboplatin": 0.3080357142857143,
@@ -668,18 +668,18 @@ Wedge rate for each drug, and the drug with higher wedge rate.
         "etoposide": 0.09821428571428571,
         "raltegravir": 0.0
     },
-    "max_wedge": "cisplatin",
-    "wedge_pharmacokinetic_rate": {
+    "most_toxic_drug": "cisplatin",
+    "pharmacokinetic_toxicity_rate": {
         "cisplatin": 0.3142857142857143,
         "codeine": 0.2785714285714286,
         "omeprazole": 0.22857142857142856,
         "lamotrigine": 0.12857142857142856,
         "vinorelbine": 0.05714285714285714,
-        "raltegravir": 0.0,
         "carboplatin": 0.0,
-        "nafamostat": 0.0,
-        "etoposide": 0.0
+        "raltegravir": 0.0,
+        "etoposide": 0.0,
+        "nafamostat": 0.0
     },
-    "max_wedge_pharmacokinetic": "cisplatin"
+    "most_toxic_drug_pharmacokinetic": "cisplatin"
 }
 ```
