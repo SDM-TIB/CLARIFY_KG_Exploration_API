@@ -642,6 +642,8 @@ The wedge rate centred at each drug is computed by:
 The wedge rate represents drugs whose presence in the treatment may negatively impact effectiveness and toxicity.
 Higher values in wedge rate mean drugs that correspond to the middle vertex of several wedges and may negatively impact the treatment.
 
+![Max_wedge](https://latex.codecogs.com/svg.latex?%5Cleft%5C%7B%20a%2Cb%2Cc%20%5Cright%5C%7D%20%5Csubseteq%20V%20and%20%5Cleft%5C%7B%28a%2Cb%29%2C%28b%2Cc%29%5Cright%5C%7D%20%5Csubseteq%20E)
+
 - Based on the paper: [Capturing Knowledge about Drug-Drug Interactions to Enhance Treatment Effectiveness](https://doi.org/10.1145/3460210.3493560).
 ## Input
 List of CUIs for Oncological and NonOncological drugs
