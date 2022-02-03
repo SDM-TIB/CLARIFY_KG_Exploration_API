@@ -9,6 +9,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 from rdflib import Graph
 import json
 from math import comb
+import os
 
 
 def build_query_clarify(input_cui, type_ddi):
@@ -147,7 +148,7 @@ def load_data(file):
     non_onco_drugs = file["Input"]["Non_OncologicalDrugs"]
     # onco_drugs = file["oncological_drug"]
     # non_onco_drugs = file["non_oncological_drug"]
-    return extract_ddi(onco_drugs, non_onco_drugs, "https://labs.tib.eu/sdm/clarify-kg-5-1/sparql")
+    return extract_ddi(onco_drugs, non_onco_drugs, os.environ["ENDPOINT"]) # "https://labs.tib.eu/sdm/clarify-kg-5-1/sparql"
 
 
 pyDatalog.create_terms('rdf_star_triple, inferred_rdf_star_triple, wedge, A, B, C, T, T2, wedge_pharmacokinetic')
