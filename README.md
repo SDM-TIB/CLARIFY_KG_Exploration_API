@@ -622,3 +622,63 @@ curl --header "Content-Type: application/json" \
   https://labs.tib.eu/sdm/clarify-exp/get_oncological_drugs
 ```
 
+# 11) Get the wedge rate
+
+A wedge is a path with two edges where edges represent DDIs. The middle-vertex is both the object drug of one interaction, and the precipitant drug of the other interaction.
+A wedge w is defined as the following: w = vertex triplet(a,b,c), where:
+<img src="http://www.sciweavers.org/tex2img.php?eq=%5Cleft%5C%7B%20a%2Cb%2Cc%20%5Cright%5C%7D%20%5Csubseteq%20V%20%20%20%5Cbigwedge%20%5Cleft%5C%7B%28a%2Cb%29%2C%28b%2Cc%29%5Cright%5C%7D%20%5Csubseteq%20E&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt="\left\{ a,b,c \right\} \subseteq V   \bigwedge \left\{(a,b),(b,c)\right\} \subseteq E" width="283" height="26" />
+The node 'b' is the middle-vertex of w.
+
+![image description](images/wedge_example.png)
+
+A graph traversal method computes the wedges, and the distribution of the middle-vertex of wedges.
+Maximal possible number of wedges centered at vertex v is defined as:
+<img src="http://www.sciweavers.org/tex2img.php?eq=Max_%7Bwedge%7D%20%3D%20x%20%2A%20%5Cbinom%7Bn-1%7D%7B2%7D%20%3D%20x%20%2A%20%20%5Cfrac%7B%28n-1%29%21%7D%7B2%21%28n-3%29%21%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt="Max_{wedge} = x * \binom{n-1}{2} = x *  \frac{(n-1)!}{2!(n-3)!}" width="336" height="46" />
+where n: represents the number of vertex in the graph, and x: represents the set of types of DDIs.
+The wedge rate centred at each drug is computed by: 
+<img src="http://www.sciweavers.org/tex2img.php?eq=%20%5Cfrac%7BW_%7Bv%7D%7D%7B%20Max_%7Bwedge%7D%20%7D%20&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt=" \frac{W_{v}}{ Max_{wedge} } " width="85" height="47" />
+
+The wedge rate represents drugs whose presence in the treatment may negatively impact effectiveness and toxicity.
+Higher values in wedge rate mean drugs that correspond to the middle vertex of several wedges and may negatively impact the treatment.
+
+
+## Input
+List of CUIs for Oncological and NonOncological drugs
+
+```
+	{
+	     "Input":{"OncologicalDrugs":["C0015133","C0079083","C0377401","C0377401","C0008838","C0078257"],"Non_OncologicalDrugs":["C0009214","C0028978","C0064636","C0207683","C1871526"]}
+
+	}
+```
+## Output
+Wedge rate for each drug, and the drug with higher wedge rate. 
+
+```
+{
+    "wedge_rate": {
+        "cisplatin": 0.39285714285714285,
+        "nafamostat": 0.32589285714285715,
+        "carboplatin": 0.3080357142857143,
+        "codeine": 0.29017857142857145,
+        "vinorelbine": 0.24107142857142858,
+        "omeprazole": 0.16071428571428573,
+        "lamotrigine": 0.11607142857142858,
+        "etoposide": 0.09821428571428571,
+        "raltegravir": 0.0
+    },
+    "max_wedge": "cisplatin",
+    "wedge_pharmacokinetic_rate": {
+        "cisplatin": 0.3142857142857143,
+        "codeine": 0.2785714285714286,
+        "omeprazole": 0.22857142857142856,
+        "lamotrigine": 0.12857142857142856,
+        "vinorelbine": 0.05714285714285714,
+        "raltegravir": 0.0,
+        "carboplatin": 0.0,
+        "nafamostat": 0.0,
+        "etoposide": 0.0
+    },
+    "max_wedge_pharmacokinetic": "cisplatin"
+}
+```
