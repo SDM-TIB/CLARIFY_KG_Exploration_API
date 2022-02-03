@@ -626,14 +626,14 @@ curl --header "Content-Type: application/json" \
 
 A wedge is a path with two edges where edges represent DDIs. The middle-vertex is both the object drug of one interaction, and the precipitant drug of the other interaction.
 A wedge w is defined as the following: w = vertex triplet(a,b,c), where:
-<img src="http://www.sciweavers.org/tex2img.php?eq=%5Cleft%5C%7B%20a%2Cb%2Cc%20%5Cright%5C%7D%20%5Csubseteq%20V%20%20%20%20%5Cwedge%20%20%5Cleft%5C%7B%28a%2Cb%29%2C%28b%2Cc%29%5Cright%5C%7D%20%5Csubseteq%20E&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt="\left\{ a,b,c \right\} \subseteq V    \wedge  \left\{(a,b),(b,c)\right\} \subseteq E" width="281" height="18" />
+<img src="http://www.sciweavers.org/tex2img.php?eq=%5Cleft%5C%7B%20a%2Cb%2Cc%20%5Cright%5C%7D%20%5Csubseteq%20V%20%20%20%20%5Cwedge%20%20%5Cleft%5C%7B%28a%2Cb%29%2C%28b%2Cc%29%5Cright%5C%7D%20%5Csubseteq%20E&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt="\left\{ a,b,c \right\} \subseteq V \wedge \left\{(a,b),(b,c)\right\} \subseteq E" width="281" height="18" />
 The node 'b' is the middle-vertex of w.
 
 # ![wedge_description](https://github.com/SDM-TIB/CLARIFY_KG_Exploration_API/blob/main/images/wedge_example.png "wedge_description")
 
 A graph traversal method computes the wedges, and the distribution of the middle-vertex of wedges.
 Maximal possible number of wedges centered at vertex v is defined as:
-<img src="http://www.sciweavers.org/tex2img.php?eq=Max_%7Bw%7D%20%3D%20x%20%2A%20%5Cbinom%7Bn-1%7D%7B2%7D%20%3D%20x%20%2A%20%20%5Cfrac%7B%28n-1%29%21%7D%7B2%21%28n-3%29%21%7D%20&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt="Max_{w} = x * \binom{n-1}{2} = x *  \frac{(n-1)!}{2!(n-3)!} " width="304" height="46" />
+<img src="http://www.sciweavers.org/tex2img.php?eq=Max_%7Bw%7D%20%3D%20x%20%2A%20%5Cbinom%7Bn-1%7D%7B2%7D%20%3D%20x%20%2A%20%20%5Cfrac%7B%28n-1%29%21%7D%7B2%21%28n-3%29%21%7D%20&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt="Max_{w} = x * \binom{n-1}{2} = x * \frac{(n-1)!}{2!(n-3)!}" width="304" height="46" />
 
 where n: represents the number of vertex in the graph, and x: represents the set of types of DDIs.
 The wedge rate centred at each drug is computed by:
