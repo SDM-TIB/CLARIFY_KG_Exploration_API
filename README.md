@@ -622,7 +622,7 @@ curl --header "Content-Type: application/json" \
   https://labs.tib.eu/sdm/clarify-exp/get_oncological_drugs
 ```
 
-# 11) Get the wedge rate
+# 11) Get toxicity rate of drugs in a treatment with Oncological and Non-Oncological Drugs
 
 A wedge is a path with two edges where edges represent DDIs. The middle-vertex is both the object drug of one interaction, and the precipitant drug of the other interaction.
 A wedge w is defined as the following: w = vertex triplet(a,b,c), where:

@@ -584,7 +584,7 @@ def get_oncological_drugs():
     return response
 
 
-@app.route('/wedge_rate', methods=['POST'])
+@app.route('/get_toxicity_rate', methods=['POST'])
 def ddi_wedge():
     if (not request.json):
         abort(400)
