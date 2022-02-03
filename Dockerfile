@@ -3,6 +3,7 @@ FROM ubuntu:18.04
 WORKDIR /clarifyexp
 ADD . /clarifyexp
 
+#CMD add-apt-repository universe
 RUN apt-get --assume-yes update
 RUN apt-get --assume-yes install python3 python3-flask python3-sparqlwrapper python3-pip
 RUN pip3 install -U flask-cors
