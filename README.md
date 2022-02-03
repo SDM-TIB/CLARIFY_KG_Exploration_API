@@ -634,6 +634,7 @@ The node 'b' is the middle-vertex of w.
 
 A graph traversal method computes the wedges, and the distribution of the middle-vertex of wedges.
 Maximal possible number of wedges centered at vertex v is defined as:
+![Max_wedge](https://latex.codecogs.com/svg.latex?Max_%7Bwedge%7D%20%3D%20x%20*%20%5Cbinom%7Bn-1%7D%7B2%7D%20%3D%20x%20*%20%5Cfrac%7B%28n-1%29%21%7D%7B2%21%28n-3%29%21%7D)
 
 where n: represents the number of vertex in the graph, and x: represents the set of types of DDIs.
 The wedge rate centred at each drug is computed by:
@@ -641,8 +642,6 @@ The wedge rate centred at each drug is computed by:
 
 The wedge rate represents drugs whose presence in the treatment may negatively impact effectiveness and toxicity.
 Higher values in wedge rate mean drugs that correspond to the middle vertex of several wedges and may negatively impact the treatment.
-
-![Max_wedge](https://latex.codecogs.com/svg.latex?Max_%7Bwedge%7D%20%3D%20x%20*%20%5Cbinom%7Bn-1%7D%7B2%7D%20%3D%20x%20*%20%5Cfrac%7B%28n-1%29%21%7D%7B2%21%28n-3%29%21%7D)
 
 - Based on the paper: [Capturing Knowledge about Drug-Drug Interactions to Enhance Treatment Effectiveness](https://doi.org/10.1145/3460210.3493560).
 ## Input
