@@ -239,7 +239,7 @@ def computingDDI(input_file):
         input_data = input_file
         onco_drugs=input_data["Input"]["OncologicalDrugs"]
         non_onco_drugs=input_data["Input"]["Non_OncologicalDrugs"]
-        return DDIs_Group_Drugs(onco_drugs,non_onco_drugs,"https://labs.tib.eu/sdm/clarify-kg-5-1/sparql","http://clarify2020.eu")
+        return DDIs_Group_Drugs(onco_drugs,non_onco_drugs,os.environ["ENDPOINT"],"http://clarify2020.eu")
 
 if __name__ == '__main__':
     x=1
