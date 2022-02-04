@@ -123,7 +123,7 @@ def query_result_symmetric_clarify(query, endpoint, labels):
     set_DDIs = pd.DataFrame(dd)
     # lowerify_cols = [col for col in set_DDIs if col not in ['precipitantDrug', 'objectDrug']]
     # set_DDIs[lowerify_cols] = set_DDIs[lowerify_cols].apply(lambda x: x.astype(str).str.lower(), axis=1)
-    set_DDIs = set_DDIs.drop_duplicates(["precipitantDrug", "objectDrug"])
+    #set_DDIs = set_DDIs.drop_duplicates(["precipitantDrug", "objectDrug"])
     set_DDIs = set_DDIs.loc[set_DDIs.EffectorDrugLabel.isin(labels)]
     set_DDIs = set_DDIs.loc[set_DDIs.AffectedDrugLabel.isin(labels)]
     return set_DDIs
