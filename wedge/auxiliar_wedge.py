@@ -50,7 +50,27 @@ def rename_impact(impact):
     return 'decrease'
 
 
-def query_result_clarify(query, endpoint):
+def get_Labels(input_cui, endpoint):
+    labels = {}
+    input_cui_uri = ','.join(['<http://clarify2020.eu/entity/' + cui + '>' for cui in input_cui])
+
+    query = """select distinct ?Drug ?drugLabel \n 
+    where {?Drug <http://clarify2020.eu/vocab/annLabel> ?drugLabel.\n 
+    FILTER (?Drug in (""" + input_cui_uri + """ ))}\n"""
+
+    sparql = SPARQLWrapper(endpoint)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+
+    data = results["results"]["bindings"]
+    for row in data:
+        labels[row["Drug"]["value"].replace("http://clarify2020.eu/entity/", "")] = row["drugLabel"]["value"].lower()
+
+    return list(labels.values())
+
+
+def query_result_clarify(query, endpoint, labels):
     sparql = SPARQLWrapper(endpoint)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
@@ -73,11 +93,12 @@ def query_result_clarify(query, endpoint):
         dd['objectDrug'].append(r['objectDrug']['value'].replace('http://clarify2020.eu/entity/', ''))
 
     set_DDIs = pd.DataFrame(dd)
-
+    set_DDIs = set_DDIs.loc[set_DDIs.EffectorDrugLabel.isin(labels)]
+    set_DDIs = set_DDIs.loc[set_DDIs.AffectedDrugLabel.isin(labels)]
     return set_DDIs
 
 
-def query_result_symmetric_clarify(query, endpoint):
+def query_result_symmetric_clarify(query, endpoint, labels):
     sparql = SPARQLWrapper(endpoint)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
@@ -102,6 +123,9 @@ def query_result_symmetric_clarify(query, endpoint):
     set_DDIs = pd.DataFrame(dd)
     # lowerify_cols = [col for col in set_DDIs if col not in ['precipitantDrug', 'objectDrug']]
     # set_DDIs[lowerify_cols] = set_DDIs[lowerify_cols].apply(lambda x: x.astype(str).str.lower(), axis=1)
+    set_DDIs = set_DDIs.drop_duplicates(["precipitantDrug", "objectDrug"])
+    set_DDIs = set_DDIs.loc[set_DDIs.EffectorDrugLabel.isin(labels)]
+    set_DDIs = set_DDIs.loc[set_DDIs.AffectedDrugLabel.isin(labels)]
     return set_DDIs
 
 
@@ -121,6 +145,8 @@ def get_drug_label_by_category(drugs_cui, set_DDIs):
 def extract_ddi(onco_drugs, non_onco_drugs, endpoint):
     input_cui = onco_drugs + non_onco_drugs
 
+    labels = get_Labels(input_cui, endpoint)
+
     # ===== Endpoint 'clarify2020' =====
     asymmetric_ddi = """    ?s a <http://clarify2020.eu/vocab/DrugDrugInteraction> . 
                      """
@@ -128,9 +154,9 @@ def extract_ddi(onco_drugs, non_onco_drugs, endpoint):
                             ?sim <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?s.
                     """
     query = build_query_clarify(input_cui, asymmetric_ddi)
-    set_DDIs = query_result_clarify(query, endpoint)
+    set_DDIs = query_result_clarify(query, endpoint, labels)
     query = build_query_clarify(input_cui, symmetric_ddi)
-    corpus_symmetric = query_result_symmetric_clarify(query, endpoint)
+    corpus_symmetric = query_result_symmetric_clarify(query, endpoint, labels)
 
     set_DDIs = combine_col(set_DDIs, ['Effect', 'Impact'])
     corpus_symmetric = combine_col(corpus_symmetric, ['Effect', 'Impact'])
@@ -148,7 +174,8 @@ def load_data(file):
     non_onco_drugs = file["Input"]["Non_OncologicalDrugs"]
     # onco_drugs = file["oncological_drug"]
     # non_onco_drugs = file["non_oncological_drug"]
-    return extract_ddi(onco_drugs, non_onco_drugs, os.environ["ENDPOINT"]) # "https://labs.tib.eu/sdm/clarify-kg-5-1/sparql"
+    return extract_ddi(onco_drugs, non_onco_drugs,
+                       os.environ["ENDPOINT"])  # "https://labs.tib.eu/sdm/clarify-kg-7/sparql" os.environ["ENDPOINT"]
 
 
 pyDatalog.create_terms('rdf_star_triple, inferred_rdf_star_triple, wedge, A, B, C, T, T2, wedge_pharmacokinetic')
@@ -181,7 +208,7 @@ def computing_wedge(set_drug_label, ddi_type):
 
     ddi_k = set.intersection(set(ddi_type), set(pharmacokinetic_ddi))
     max_wedge_k = len(ddi_k) * comb(len(set_drug_label) - 1, 2)
-    #print(n_ddi, len(set_drug_label), max_wedge)
+    # print(n_ddi, len(set_drug_label), max_wedge)
     for d in set_drug_label:
         w = wedge(A, d, C, T, T2)
         dict_frequency[d] = len(w) / max_wedge
