@@ -400,10 +400,15 @@ def proccesing_response(input_dicc, target,limit,page,all_drugs):
                         drugInteractions[drug]["DDI"]=dict()
                         drugInteractions[drug]["DDI"]["Pharmacodynamic"]=[]
                         drugInteractions[drug]["DDI"]["Pharmacokinetic"]=[]
+                        DDI_description=dict()
                         for result in query_reslut:
                             #if all_drugs==0:
                                 #if not (result["effectorDrugCUI"]["value"]  in consideredDrugs and result["affectdDrugCUI"]["value"] in consideredDrugs) :
                                     #continue
+                            if result["description"]["value"] in DDI_description:
+                                continue
+                            else:
+                                DDI_description[result["description"]["value"]]=''
                             interaction=dict()
                             if result["type"]["value"]=='Symmetric':
                                 interaction["Drug1"]=result["effectorDrugLabel"]["value"]
@@ -428,6 +433,11 @@ def proccesing_response(input_dicc, target,limit,page,all_drugs):
                     if len(query_reslut)>0:
                         drugInteractions[str(drug_pair)]["Labels"]=query_reslut[0]["affectdDrugLabel"]["value"]+" AND "+query_reslut[0]["effectorDrugLabel"]["value"]
                         drugInteractions[str(drug_pair)]["DDIS"]=[]
+                        DDI_description=dict()
+                        if result["description"]["value"] in DDI_description:
+                                continue
+                        else:
+                                DDI_description[result["description"]["value"]]=''
                         for result in query_reslut:
                             interaction=dict()
                             interaction["effectorDrug"]=result["effectorDrugLabel"]["value"]
