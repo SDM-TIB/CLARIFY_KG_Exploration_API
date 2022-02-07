@@ -1,12 +1,12 @@
-docker build -t sdmtib/clarify_exploration:1.11 .
+docker build -t sdmtib/clarify_exploration:1.12 .
 
 
-docker push sdmtib/clarify_exploration:1.11
+docker push sdmtib/clarify_exploration:1.12
 
 docker stop clarify_exploration_api 
 
 docker rm clarify_exploration_api 
 
-docker run -d --name clarify_exploration_api -p 18874:5000 -e ENDPOINT='http://node2.research.tib.eu:11291/sparql' sdmtib/clarify_exploration:1.11
+docker run -d --name clarify_exploration_api -p 18874:5000 -e ENDPOINT='http://node2.research.tib.eu:11291/sparql' sdmtib/clarify_exploration:1.12
 
-docker image pull sdmtib/clarify_exploration:1.11
+docker image pull sdmtib/clarify_exploration:1.12
