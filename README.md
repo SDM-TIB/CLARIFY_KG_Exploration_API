@@ -697,3 +697,56 @@ curl --location --request POST 'https://labs.tib.eu/sdm/clarify-exp/get_toxicity
 
 	}'
 ```
+
+# 12) Get all NonOncological Drugs
+
+
+## Output
+A list of all NonOncological Drugs in the KG.
+The drug label and CUI id is provided for each drug
+
+```
+        {
+            "label": "Valproic acid",
+            "cui": "C0042291"
+        },
+        {
+            "label": "Vancomycin",
+            "cui": "C0042313"
+        },
+        {
+            "label": "Vecuronium bromide",
+            "cui": "C0042435"
+        },
+        {
+            "label": "Vitamin b12",
+            "cui": "C0042845"
+        },
+        {
+            "label": "Gemcitabine",
+            "cui": "C0045093"
+        },
+        {
+            "label": "Mirtazapine",
+            "cui": "C0049506"
+        },
+        {
+            "label": "Almagate",
+            "cui": "C0051244"
+        },
+        {
+            "label": "Amlodipine",
+            "cui": "C0051696"
+        },
+        {
+            "label": "Azithromycin",
+            "cui": "C0052796"
+        }
+```
+
+## GET request example
+
+```
+curl --header "Content-Type: application/json" \
+  --request GET \
+  https://labs.tib.eu/sdm/nononcological_drugs_api/get_nononcological_drugs
