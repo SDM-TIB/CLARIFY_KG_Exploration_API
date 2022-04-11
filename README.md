@@ -706,6 +706,8 @@ A list of all NonOncological Drugs in the KG.
 The drug label and CUI id is provided for each drug
 
 ```
+{
+    "NoNOncological_Drugs": [
         {
             "label": "Valproic acid",
             "cui": "C0042291"
@@ -742,6 +744,8 @@ The drug label and CUI id is provided for each drug
             "label": "Azithromycin",
             "cui": "C0052796"
         }
+	]
+}
 ```
 
 ## GET request example
