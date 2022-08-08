@@ -1,13 +1,10 @@
 import pandas as pd
 
 pd.options.mode.chained_assignment = None  # default='warn'
-import numpy as np
 from pyDatalog import pyDatalog
 from pyDatalog.pyDatalog import assert_fact, load, ask
 
 from SPARQLWrapper import SPARQLWrapper, JSON
-from rdflib import Graph
-import json
 from math import comb
 import os
 
@@ -31,11 +28,11 @@ def build_query_clarify(input_cui, type_ddi):
 
 
 def store_pharmacokinetic_ddi(effect):
-    if effect in ['Excretion_rate', 'Excretory_function']:
+    if effect in ['Excretion_rate', 'Excretory_function', 'Excretion']:
         effect = 'excretion'
-    elif effect in ['Process_of_absorption']:
+    elif effect in ['Process_of_absorption', 'Absorption']:
         effect = 'absorption'
-    elif effect in ['Serum_concentration', 'Serum_concentration_of', 'Serum_level']:
+    elif effect in ['Serum_concentration', 'Serum_concentration_of', 'Serum_level', 'Serum_globulin_level', 'Metabolite', 'Active_metabolites']:
         effect = 'serum_concentration'
     elif effect in ['Metabolism']:
         effect = 'metabolism'
