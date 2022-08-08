@@ -40,6 +40,11 @@ list of drugs CUIs
 }
 ```
 
+Cancer Type should be provided in the URL:
+cancer=LC
+or
+cancer=BC
+
 ## Output
 Drug-Drug-Interactions with only Oncological and NonOncological drugs for the input drugs
 
@@ -94,7 +99,7 @@ curl --header "Content-Type: application/json" \
     "C3657270"
    ]
 }' \
-  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDI&all_drugs=0&limit=10&page=0
+  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDI&all_drugs=0&cancer=LC&limit=10&page=0
 ```
 
 # 2) DDIGroupDrugs API
@@ -402,10 +407,15 @@ list of drugs CUIs
     "C1135135",
     "C1122962",
     "C0008838",
-    "C0052796"
+    "C0016778"
    ]
 }
 ```
+
+Cancer Type should be provided in the URL:
+cancer=LC
+or
+cancer=BC
 
 ## Output
 Predicted Drug-Drug-Interactions with only Oncological and NonOncological drugs for the input drugs
@@ -440,10 +450,10 @@ curl --header "Content-Type: application/json" \
     "C1135135",
     "C1122962",
     "C0008838",
-    "C0052796"
+    "C0016778"
    ]
 }' \
-  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDIP&all_drugs=0&limit=10&page=0
+  https://labs.tib.eu/sdm/clarify-exp/kg-exp?target=DDIP&all_drugs=0&cancer=BC&limit=10&page=0
 ```
 
 
@@ -586,6 +596,12 @@ curl --header "Content-Type: application/json" \
 
 # 10) Get all Oncological Drugs
 
+## Input
+
+Cancer Type should be provided in the URL:
+cancer=LC
+or
+cancer=BC
 
 ## Output
 A list of all Oncological Drugs in the KG.
@@ -619,7 +635,7 @@ The drug label and CUI id is provided for each drug
 ```
 curl --header "Content-Type: application/json" \
   --request GET \
-  https://labs.tib.eu/sdm/clarify-exp/get_oncological_drugs
+  https://labs.tib.eu/sdm/clarify-exp/get_oncological_drugs?cancer=LC
 ```
 
 # 11) Get toxicity rate of drugs in a treatment with Oncological and Non-Oncological Drugs

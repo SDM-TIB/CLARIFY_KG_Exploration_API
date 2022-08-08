@@ -24,7 +24,7 @@ logger.setLevel(logging.INFO)
 
 #os.environ["ENDPOINT"]='https://labs.tib.eu/sdm/clarify-kg-5-1/sparql'
 KG = os.environ["ENDPOINT"]
-#KG= 'http://node2.research.tib.eu:11290/sparql'
+#KG= 'http://node2.research.tib.eu:11295/sparql'
 EMPTY_JSON = "{}"
 
 app = Flask(__name__)
@@ -37,12 +37,12 @@ with open(filename, 'r', encoding='utf-8') as file:
     reader = csv.reader(file,delimiter=',')
     rows=list(reader)
     
-consideredDrugs=[]
+LC_consideredDrugs=[]
 for row in rows:
-    consideredDrugs.append('http://clarify2020.eu/entity/'+row[1])
+    LC_consideredDrugs.append('http://clarify2020.eu/entity/'+row[1])
     
     
-filename='data/oncologicalDrugs_final.csv'
+filename='data/LC_OncologicalDrugs.csv'
 with open(filename, 'r', encoding='utf-8') as file:
     reader = csv.reader(file,delimiter=',')
     rows=list(reader)
@@ -51,8 +51,22 @@ rows.pop(0)
     
 
 for row in rows:
-    consideredDrugs.append('http://clarify2020.eu/entity/'+row[0])
+    LC_consideredDrugs.append('http://clarify2020.eu/entity/'+row[1])
 
+
+
+BC_consideredDrugs=[]
+
+filename='data/BC_OncologicalDrugs.csv'
+with open(filename, 'r', encoding='utf-8') as file:
+    reader = csv.reader(file,delimiter=',')
+    rows=list(reader)
+    
+rows.pop(0)
+    
+
+for row in rows:
+    BC_consideredDrugs.append('http://clarify2020.eu/entity/'+row[1])
 ############################
 #
 # Query constants
@@ -244,7 +258,13 @@ def execute_query(query,limit,page):
 #
 ############################
 
-def drug2_interactions_query(drug,limit,page,all_drugs):
+def drug2_interactions_query(drug,limit,page,all_drugs,cancer):
+    if cancer=="LC":
+        consideredDrugs=LC_consideredDrugs
+    elif cancer=="BC":
+        consideredDrugs=BC_consideredDrugs
+    
+    
     query_1=""
 
     
@@ -370,7 +390,7 @@ def drug2_absorption_query(drug,limit,page):
     qresults = execute_query(query,limit,page)
     return qresults
 
-def proccesing_response(input_dicc, target,limit,page,all_drugs):
+def proccesing_response(input_dicc, target,limit,page,all_drugs,cancer):
     cuis=dict()
     results=dict()
 
@@ -393,7 +413,7 @@ def proccesing_response(input_dicc, target,limit,page,all_drugs):
         if elem=='Drugs':
             if target=="DDI":
                 for drug in lcuis:
-                    query_reslut=drug2_interactions_query(drug,limit,page,all_drugs)
+                    query_reslut=drug2_interactions_query(drug,limit,page,all_drugs,cancer)
                     drugInteractions[drug]=dict()
                     if len(query_reslut)>0:
                         #drugInteractions[drug]["Label"]=query_reslut[0]["affectdDrugLabel"]["value"]
@@ -433,22 +453,28 @@ def proccesing_response(input_dicc, target,limit,page,all_drugs):
                     if len(query_reslut)>0:
                         drugInteractions[str(drug_pair)]["Labels"]=query_reslut[0]["affectdDrugLabel"]["value"]+" AND "+query_reslut[0]["effectorDrugLabel"]["value"]
                         drugInteractions[str(drug_pair)]["DDIS"]=[]
-                        DDI_description=dict()
-                        if result["description"]["value"] in DDI_description:
-                                continue
-                        else:
-                                DDI_description[result["description"]["value"]]=''
-                        for result in query_reslut:
-                            interaction=dict()
-                            interaction["effectorDrug"]=result["effectorDrugLabel"]["value"]
-                            interaction["affectdDrug"]=result["affectdDrugLabel"]["value"]
-                            interaction["effect"]=result["adverse"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
-                            interaction["impact"]=result["impact"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
-                            interaction["description"]=result["description"]["value"]
-                            if interaction not in drugInteractions[str(drug_pair)]["DDIS"]:
-                                drugInteractions[str(drug_pair)]["DDIS"].append(interaction)
+                        
+                        for result in query_reslut:                        
+                            DDI_description=dict()
+                            if result["description"]["value"] in DDI_description:
+                                    continue
+                            else:
+                                    DDI_description[result["description"]["value"]]=''
+                            for result in query_reslut:
+                                interaction=dict()
+                                interaction["effectorDrug"]=result["effectorDrugLabel"]["value"]
+                                interaction["affectdDrug"]=result["affectdDrugLabel"]["value"]
+                                interaction["effect"]=result["adverse"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
+                                interaction["impact"]=result["impact"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
+                                interaction["description"]=result["description"]["value"]
+                                if interaction not in drugInteractions[str(drug_pair)]["DDIS"]:
+                                    drugInteractions[str(drug_pair)]["DDIS"].append(interaction)
                 results['response']=drugInteractions
             elif target=="DDIP":
+                if cancer=="LC":
+                    consideredDrugs=LC_consideredDrugs
+                elif cancer=="BC":
+                    consideredDrugs=BC_consideredDrugs
                 #drugs_pairs=[(x,y) for x,y in list(itertools.product(lcuis, lcuis)) if x!=y]
                 for drug in lcuis:
                     query_reslut=drug2_interactions_predicted_query(drug,limit,page,all_drugs)
@@ -551,13 +577,17 @@ def run_exploration_api():
         all_drugs = int(request.args['all_drugs'])
     else:
         all_drugs=1
+    if 'cancer' in request.args:
+        cancer = request.args['cancer']
+    else:
+        cancer=1
 
     input_list = request.json
     if len(input_list) == 0:
         logger.info("Error in the input format")
         r = "{results: 'Error in the input format'}"
     else:
-        response = proccesing_response(input_list,target,limit,page,all_drugs)       
+        response = proccesing_response(input_list,target,limit,page,all_drugs,cancer)       
         r = json.dumps(response, indent=4)  
     logger.info("Sending the results: ")
     response = make_response(r, 200)
@@ -565,14 +595,23 @@ def run_exploration_api():
     return response
 
 
-def get_oncological_drugs_query():
-    query="""select distinct ?drugLabel ?cui where 
-{?drug a <http://clarify2020.eu/vocab/OncologicalDrug>.
+def get_oncological_drugs_query(cancer):
+    if cancer=="LC":
+        query="""select distinct ?drugLabel ?cui where 
+{?drug a <http://clarify2020.eu/vocab/LungCancerOncologicalDrug>.
 ?drug <http://clarify2020.eu/vocab/drugLabel> ?drugLabel.
 ?drug <http://clarify2020.eu/vocab/hasCUIAnnotation> ?ann.
 ?ann <http://clarify2020.eu/vocab/annID> ?cui.
 } 
     """
+    elif cancer=="BC":
+        query="""select distinct ?drugLabel ?cui where 
+{?drug a <http://clarify2020.eu/vocab/BreastCancerOncologicalDrug>.
+?drug <http://clarify2020.eu/vocab/drugLabel> ?drugLabel.
+?drug <http://clarify2020.eu/vocab/hasCUIAnnotation> ?ann.
+?ann <http://clarify2020.eu/vocab/annID> ?cui.
+} 
+"""
     qresults = execute_query(query,0,0)
     finalresult=[]
     for result in qresults:
@@ -585,8 +624,12 @@ def get_oncological_drugs_query():
 
 @app.route('/get_oncological_drugs', methods=['GET'])
 def get_oncological_drugs():
+    if 'cancer' in request.args:
+        cancer = request.args['cancer']
+    else:
+        abort(400)
     response=dict()
-    response['Oncological_Drugs'] = get_oncological_drugs_query()
+    response['Oncological_Drugs'] = get_oncological_drugs_query(cancer)
     r = json.dumps(response, indent=4)            
     logger.info("Sending the results: ")
     response = make_response(r, 200)
