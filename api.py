@@ -240,7 +240,7 @@ select distinct  ?drug ?drugLabel ?absorption WHERE
 ############################
 
 
-def execute_query(query,limit,page):
+def execute_query(query,limit=0,page=0):
     if limit!=0:
        query+="LIMIT "+str(limit)
     query+=" OFFSET "+str(page) 
@@ -622,6 +622,33 @@ def get_oncological_drugs_query(cancer):
         
     return finalresult
 
+def get_nononcological_drugs_query():
+    query="""select distinct ?drugLabel ?cui where 
+{?drug a <http://clarify2020.eu/vocab/LungCancerNonOncologicalDrug>.
+?drug <http://clarify2020.eu/vocab/drugLabel> ?drugLabel.
+?drug <http://clarify2020.eu/vocab/hasCUIAnnotation> ?ann.
+?ann <http://clarify2020.eu/vocab/annID> ?cui.
+} 
+    """
+    qresults = execute_query(query)
+    finalresult=[]
+    for result in qresults:
+        item={}
+        item["label"]=result["drugLabel"]["value"].replace("_"," ")
+        item["cui"]=result["cui"]["value"]
+        finalresult.append(item)
+        
+    return finalresult
+
+
+def proccesing_response_nononcological():
+    response=dict()
+    response['NoNOncological_Drugs']=[]
+    nononcological_drugs=get_nononcological_drugs_query()
+    response['NoNOncological_Drugs']=nononcological_drugs
+
+    return response
+
 @app.route('/get_oncological_drugs', methods=['GET'])
 def get_oncological_drugs():
     if 'cancer' in request.args:
@@ -648,6 +675,16 @@ def ddi_wedge():
         adverse_event, union, set_dsd_label, comorbidity_drug, set_DDIs = auxiliar_wedge.load_data(input_list)
         response = auxiliar_wedge.discovering_knowledge(adverse_event, union, set_dsd_label, comorbidity_drug)
         r = json.dumps(response, indent=4)
+    response = make_response(r, 200)
+    response.mimetype = "application/json"
+    return response
+
+
+@app.route('/get_nononcological_drugs', methods=['GET'])
+def get_nononcological_drugs():
+    response = proccesing_response_nononcological()
+    r = json.dumps(response, indent=4)            
+    logger.info("Sending the results: ")
     response = make_response(r, 200)
     response.mimetype = "application/json"
     return response
