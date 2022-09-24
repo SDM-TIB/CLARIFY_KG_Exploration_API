@@ -638,7 +638,7 @@ curl --header "Content-Type: application/json" \
   https://labs.tib.eu/sdm/clarify-exp/get_oncological_drugs?cancer=LC
 ```
 
-# 11) Get toxicity rate of drugs in a treatment with Oncological and Non-Oncological Drugs
+# 11) Get DDI rate of drugs in a treatment with Oncological and Non-Oncological Drugs
 
 A wedge is a path with two edges where edges represent DDIs. The middle-vertex is both the object drug of one interaction, and the precipitant drug of the other interaction.
 A wedge w is defined as the following: w = vertex triplet(a,b,c), where:
@@ -672,23 +672,23 @@ List of CUIs for Oncological and NonOncological drugs
 	}
 ```
 ## Output
-Toxicity rate for each drug, and the most toxic drug. 
+DDI rate for each drug, and the most DDI drug. 
 
 ```
 {
-    "toxicity_rate": {
-        "cisplatin": 0.39285714285714285,
-        "nafamostat": 0.32589285714285715,
-        "carboplatin": 0.3080357142857143,
-        "codeine": 0.29017857142857145,
-        "vinorelbine": 0.24107142857142858,
+    "DDI_rate": {
+        "cisplatin": 0.29464285714285715,
+        "codeine": 0.23214285714285715,
+        "carboplatin": 0.20535714285714285,
+        "nafamostat": 0.16964285714285715,
         "omeprazole": 0.16071428571428573,
-        "lamotrigine": 0.11607142857142858,
-        "etoposide": 0.09821428571428571,
+        "vinorelbine": 0.15625,
+        "lamotrigine": 0.10267857142857142,
+        "etoposide_vp16": 0.026785714285714284,
         "raltegravir": 0.0
     },
-    "most_toxic_drug": "cisplatin",
-    "pharmacokinetic_toxicity_rate": {
+    "most_DDI_drug": "cisplatin",
+    "pharmacokinetic_DDI_rate": {
         "cisplatin": 0.3142857142857143,
         "codeine": 0.2785714285714286,
         "omeprazole": 0.22857142857142856,
@@ -696,17 +696,17 @@ Toxicity rate for each drug, and the most toxic drug.
         "vinorelbine": 0.05714285714285714,
         "carboplatin": 0.0,
         "raltegravir": 0.0,
-        "etoposide": 0.0,
+        "etoposide_vp16": 0.0,
         "nafamostat": 0.0
     },
-    "most_toxic_drug_pharmacokinetic": "cisplatin"
+    "most_DDI_drug_pharmacokinetic": "cisplatin"
 }
 ```
 
 ## POST request example
 
 ```
-curl --location --request POST 'https://labs.tib.eu/sdm/clarify-exp/get_toxicity_rate' \
+curl --location --request POST 'https://labs.tib.eu/sdm/clarify-exp/get_DDI_rate' \
 --header 'Content-Type: application/json' \
 --data-raw '{
 	     "Input":{"OncologicalDrugs":["C0015133","C0079083","C0377401","C0377401","C0008838","C0078257"],"Non_OncologicalDrugs":["C0009214","C0028978","C0064636","C0207683","C1871526"]}
