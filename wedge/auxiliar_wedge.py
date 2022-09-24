@@ -7,13 +7,17 @@ from pyDatalog.pyDatalog import assert_fact, load, ask
 from SPARQLWrapper import SPARQLWrapper, JSON
 from math import comb
 import os
+# os.environ["ENDPOINT"]='https://labs.tib.eu/sdm/clarify-kg-7-1/sparql'
 
 
-def build_query_clarify(input_cui, type_ddi):
+def build_query_clarify(input_cui):
     input_cui_uri = ','.join(['<http://clarify2020.eu/entity/' + cui + '>' for cui in input_cui])
     query = """
-    select distinct ?EffectorDrugLabel ?AffectedDrugLabel ?Effect ?Impact ?precipitantDrug ?objectDrug
-        where {""" + type_ddi + """        
+    select distinct ?EffectorDrugLabel ?AffectedDrugLabel ?Effect ?Impact ?precipitantDrug ?objectDrug ?type
+        where {
+        {{?s a <http://clarify2020.eu/vocab/DrugDrugInteraction> .  BIND('Pharmacokinetics' as ?type)} 
+        UNION {?sim a <http://clarify2020.eu/vocab/SymmetricDrugDrugInteraction> . 
+                            ?sim <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?s.BIND('Pharmadynamics' as ?type) }}
         ?s <http://clarify2020.eu/vocab/effect_cui> ?o . 
         ?o <http://clarify2020.eu/vocab/annLabel> ?Effect . 
         ?s <http://clarify2020.eu/vocab/impact> ?Impact .
@@ -78,8 +82,6 @@ def query_result_clarify(query, endpoint, labels):
     for r in results['results']['bindings']:
         effect = r['Effect']['value']
         effect = store_pharmacokinetic_ddi(effect)
-        if effect == 'pharmacodynamic':
-            continue
         dd['Effect'].append(effect.lower())
         impact = r['Impact']['value'].replace('http://clarify2020.eu/entity/', '')
         impact = rename_impact(impact)
@@ -89,38 +91,17 @@ def query_result_clarify(query, endpoint, labels):
         dd['precipitantDrug'].append(r['precipitantDrug']['value'].replace('http://clarify2020.eu/entity/', ''))
         dd['objectDrug'].append(r['objectDrug']['value'].replace('http://clarify2020.eu/entity/', ''))
 
-    set_DDIs = pd.DataFrame(dd)
-    set_DDIs = set_DDIs.loc[set_DDIs.EffectorDrugLabel.isin(labels)]
-    set_DDIs = set_DDIs.loc[set_DDIs.AffectedDrugLabel.isin(labels)]
-    return set_DDIs
-
-
-def query_result_symmetric_clarify(query, endpoint, labels):
-    sparql = SPARQLWrapper(endpoint)
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
-
-    dd = {'EffectorDrugLabel': [], 'AffectedDrugLabel': [], 'Effect': [], 'Impact': [], 'precipitantDrug': [],
-          'objectDrug': []}
-    for r in results['results']['bindings']:
-        effect = r['Effect']['value']
-        effect = store_pharmacokinetic_ddi(effect)
-        if effect == 'pharmacodynamic':
-            continue
-        dd['Effect'].append(effect.lower())
-        impact = r['Impact']['value'].replace('http://clarify2020.eu/entity/', '')
-        impact = rename_impact(impact)
-        dd['Impact'].append(impact)
-        dd['EffectorDrugLabel'].append(r['AffectedDrugLabel']['value'].lower())
-        dd['AffectedDrugLabel'].append(r['EffectorDrugLabel']['value'].lower())
-        dd['precipitantDrug'].append(r['objectDrug']['value'].replace('http://clarify2020.eu/entity/', ''))
-        dd['objectDrug'].append(r['precipitantDrug']['value'].replace('http://clarify2020.eu/entity/', ''))
+        if r['Effect']['value']=='Pharmadynamics':
+            dd['Effect'].append(effect.lower())
+            impact = r['Impact']['value'].replace('http://clarify2020.eu/entity/', '')
+            impact = rename_impact(impact)
+            dd['Impact'].append(impact)
+            dd['EffectorDrugLabel'].append(r['AffectedDrugLabel']['value'].lower())
+            dd['AffectedDrugLabel'].append(r['EffectorDrugLabel']['value'].lower())
+            dd['precipitantDrug'].append(r['objectDrug']['value'].replace('http://clarify2020.eu/entity/', ''))
+            dd['objectDrug'].append(r['precipitantDrug']['value'].replace('http://clarify2020.eu/entity/', ''))
 
     set_DDIs = pd.DataFrame(dd)
-    # lowerify_cols = [col for col in set_DDIs if col not in ['precipitantDrug', 'objectDrug']]
-    # set_DDIs[lowerify_cols] = set_DDIs[lowerify_cols].apply(lambda x: x.astype(str).str.lower(), axis=1)
-    #set_DDIs = set_DDIs.drop_duplicates(["precipitantDrug", "objectDrug"])
     set_DDIs = set_DDIs.loc[set_DDIs.EffectorDrugLabel.isin(labels)]
     set_DDIs = set_DDIs.loc[set_DDIs.AffectedDrugLabel.isin(labels)]
     return set_DDIs
@@ -141,38 +122,20 @@ def get_drug_label_by_category(drugs_cui, set_DDIs):
 
 def extract_ddi(onco_drugs, non_onco_drugs, endpoint):
     input_cui = onco_drugs + non_onco_drugs
-
     labels = get_Labels(input_cui, endpoint)
 
-    # ===== Endpoint 'clarify2020' =====
-    asymmetric_ddi = """    ?s a <http://clarify2020.eu/vocab/DrugDrugInteraction> . 
-                     """
-    symmetric_ddi = """     ?sim a <http://clarify2020.eu/vocab/SymmetricDrugDrugInteraction> . 
-                            ?sim <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?s.
-                    """
-    query = build_query_clarify(input_cui, asymmetric_ddi)
-    set_DDIs = query_result_clarify(query, endpoint, labels)
-    query = build_query_clarify(input_cui, symmetric_ddi)
-    corpus_symmetric = query_result_symmetric_clarify(query, endpoint, labels)
-
-    set_DDIs = combine_col(set_DDIs, ['Effect', 'Impact'])
-    corpus_symmetric = combine_col(corpus_symmetric, ['Effect', 'Impact'])
-    adverse_event = corpus_symmetric.Effect_Impact.unique()
-    union = pd.concat([set_DDIs, corpus_symmetric])
-
-    set_dsd_label = get_drug_label_by_category(onco_drugs, union)
-    comorbidity_drug = get_drug_label_by_category(non_onco_drugs, union)
-    set_DDIs = set_DDIs[['EffectorDrugLabel', 'AffectedDrugLabel', 'Effect_Impact']]
-    return adverse_event, union, set_dsd_label, comorbidity_drug, set_DDIs
+    query = build_query_clarify(input_cui)
+    union = query_result_clarify(query, endpoint, labels)
+    union = combine_col(union, ['Effect', 'Impact'])
+    set_dsd_label = get_drug_label_by_category(input_cui, union)
+    return union, set_dsd_label
 
 
 def load_data(file):
     onco_drugs = file["Input"]["OncologicalDrugs"]
     non_onco_drugs = file["Input"]["Non_OncologicalDrugs"]
-    # onco_drugs = file["oncological_drug"]
-    # non_onco_drugs = file["non_oncological_drug"]
     return extract_ddi(onco_drugs, non_onco_drugs,
-                       os.environ["ENDPOINT"])  # "https://labs.tib.eu/sdm/clarify-kg-7/sparql" os.environ["ENDPOINT"]
+                       os.environ["ENDPOINT"])
 
 
 pyDatalog.create_terms('rdf_star_triple, inferred_rdf_star_triple, wedge, A, B, C, T, T2, wedge_pharmacokinetic')
@@ -221,18 +184,26 @@ ddiTypeEffectiveness = ["serum_concentration_decrease", "metabolism_increase", "
 pharmacokinetic_ddi = ddiTypeToxicity + ddiTypeEffectiveness
 
 
-def discovering_knowledge(adverse_event, union, set_dsd_label, comorbidity_drug):
+def discovering_knowledge(union, set_dsd_label):
     dict_wedge = dict()
     plot_ddi = union[['EffectorDrugLabel', 'AffectedDrugLabel', 'Effect_Impact']]
     plot_ddi.drop_duplicates(keep='first', inplace=True)
     build_datalog_model(plot_ddi)
     ddi_type = plot_ddi.Effect_Impact.unique()
-    dict_frequency, dict_frequency_k = computing_wedge(comorbidity_drug.union(set_dsd_label), ddi_type)
+    dict_frequency, dict_frequency_k = computing_wedge(set_dsd_label, ddi_type)
     dict_frequency = dict(sorted(dict_frequency.items(), key=lambda item: item[1], reverse=True))
-    dict_wedge['toxicity_rate'] = dict_frequency
-    dict_wedge['most_toxic_drug'] = max(dict_frequency, key=dict_frequency.get)
+    dict_wedge['DDI_rate'] = dict_frequency
+    dict_wedge['most_DDI_drug'] = max(dict_frequency, key=dict_frequency.get)
 
     dict_frequency_k = dict(sorted(dict_frequency_k.items(), key=lambda item: item[1], reverse=True))
-    dict_wedge['pharmacokinetic_toxicity_rate'] = dict_frequency_k
-    dict_wedge['most_toxic_drug_pharmacokinetic'] = max(dict_frequency_k, key=dict_frequency_k.get)
+    dict_wedge['pharmacokinetic_DDI_rate'] = dict_frequency_k
+    dict_wedge['most_DDI_drug_pharmacokinetic'] = max(dict_frequency_k, key=dict_frequency_k.get)
     return dict_wedge
+
+# if __name__ == '__main__':
+#     input_list = {
+# 	     "Input":{"OncologicalDrugs":["C0015133","C0079083","C0377401","C0377401","C0008838","C0078257"],"Non_OncologicalDrugs":["C0009214","C0028978","C0064636","C0207683","C1871526"]}
+# 	}
+#     union, set_dsd_label = load_data(input_list)
+#     response = discovering_knowledge(union, set_dsd_label)
+#     print(response)
