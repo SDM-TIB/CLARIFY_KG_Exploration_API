@@ -164,10 +164,9 @@ def build_datalog_model(union):
 def computing_wedge(set_drug_label, ddi_type):
     dict_frequency = dict()
     dict_frequency_k = dict()
-    max_wedge = len(ddi_type) * comb(len(set_drug_label) - 1, 2)
-
+    max_wedge = len(ddi_type) * comb(len(set_drug_label), 2)
     ddi_k = set.intersection(set(ddi_type), set(pharmacokinetic_ddi))
-    max_wedge_k = len(ddi_k) * comb(len(set_drug_label) - 1, 2)
+    max_wedge_k = len(ddi_k) * comb(len(set_drug_label), 2)
     # print(n_ddi, len(set_drug_label), max_wedge)
     for d in set_drug_label:
         w = wedge(A, d, C, T, T2)
@@ -193,11 +192,14 @@ def discovering_knowledge(union, set_dsd_label):
     dict_frequency, dict_frequency_k = computing_wedge(set_dsd_label, ddi_type)
     dict_frequency = dict(sorted(dict_frequency.items(), key=lambda item: item[1], reverse=True))
     dict_wedge['DDI_rate'] = dict_frequency
-    dict_wedge['most_DDI_drug'] = max(dict_frequency, key=dict_frequency.get)
+    max_value = max(dict_frequency.values())
+    dict_wedge['most_DDI_drug'] = {key for key, value in dict_frequency.items() if value == max_value}
 
     dict_frequency_k = dict(sorted(dict_frequency_k.items(), key=lambda item: item[1], reverse=True))
     dict_wedge['pharmacokinetic_DDI_rate'] = dict_frequency_k
-    dict_wedge['most_DDI_drug_pharmacokinetic'] = max(dict_frequency_k, key=dict_frequency_k.get)
+    max_value = max(dict_frequency_k.values())
+    # dict_wedge['most_DDI_drug_pharmacokinetic'] = max(dict_frequency_k, key=dict_frequency_k.get)
+    dict_wedge['most_DDI_drug_pharmacokinetic'] = {key for key, value in dict_frequency_k.items() if value == max_value}
     return dict_wedge
 
 # if __name__ == '__main__':
