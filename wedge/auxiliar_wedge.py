@@ -1,3 +1,4 @@
+# import json
 import pandas as pd
 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -193,19 +194,19 @@ def discovering_knowledge(union, set_dsd_label):
     dict_frequency = dict(sorted(dict_frequency.items(), key=lambda item: item[1], reverse=True))
     dict_wedge['DDI_rate'] = dict_frequency
     max_value = max(dict_frequency.values())
-    dict_wedge['most_DDI_drug'] = {key for key, value in dict_frequency.items() if value == max_value}
+    dict_wedge['most_DDI_drug'] = [key for key, value in dict_frequency.items() if value == max_value]
 
     dict_frequency_k = dict(sorted(dict_frequency_k.items(), key=lambda item: item[1], reverse=True))
     dict_wedge['pharmacokinetic_DDI_rate'] = dict_frequency_k
     max_value = max(dict_frequency_k.values())
     # dict_wedge['most_DDI_drug_pharmacokinetic'] = max(dict_frequency_k, key=dict_frequency_k.get)
-    dict_wedge['most_DDI_drug_pharmacokinetic'] = {key for key, value in dict_frequency_k.items() if value == max_value}
+    dict_wedge['most_DDI_drug_pharmacokinetic'] = [key for key, value in dict_frequency_k.items() if value == max_value]
     return dict_wedge
 
 # if __name__ == '__main__':
 #     input_list = {
-# 	     "Input":{"OncologicalDrugs":["C0015133","C0079083","C0377401","C0377401","C0008838","C0078257"],"Non_OncologicalDrugs":["C0009214","C0028978","C0064636","C0207683","C1871526"]}
+# 	     "Input":{"OncologicalDrugs":["C3853921"],"Non_OncologicalDrugs":["C0286651","C0012010","C0016410","C0004147"]}
 # 	}
 #     union, set_dsd_label = load_data(input_list)
 #     response = discovering_knowledge(union, set_dsd_label)
-#     print(response)
+#     print(json.dumps(response, indent=4))
