@@ -1,4 +1,4 @@
-pyDatalog==0.17.1
+pyDatalog
 flask-cors==3.0.9
 flask==2.1.0
 sparqlwrapper==1.8.4

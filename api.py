@@ -24,7 +24,7 @@ logger.setLevel(logging.INFO)
 
 #os.environ["ENDPOINT"]='https://labs.tib.eu/sdm/clarify-kg-5-1/sparql'
 KG = os.environ["ENDPOINT"]
-#KG= 'http://node2.research.tib.eu:11295/sparql'
+#KG= 'http://node2.research.tib.eu:12200/sparql'
 EMPTY_JSON = "{}"
 
 app = Flask(__name__)
@@ -39,7 +39,7 @@ with open(filename, 'r', encoding='utf-8') as file:
     
 LC_consideredDrugs=[]
 for row in rows:
-    LC_consideredDrugs.append('http://clarify2020.eu/entity/'+row[1])
+    LC_consideredDrugs.append('http://research.tib.eu/clarify2020/entity/'+row[1])
     
     
 filename='data/LC_OncologicalDrugs.csv'
@@ -51,7 +51,7 @@ rows.pop(0)
     
 
 for row in rows:
-    LC_consideredDrugs.append('http://clarify2020.eu/entity/'+row[1])
+    LC_consideredDrugs.append('http://research.tib.eu/clarify2020/entity/'+row[1])
 
 
 
@@ -66,7 +66,7 @@ rows.pop(0)
     
 
 for row in rows:
-    BC_consideredDrugs.append('http://clarify2020.eu/entity/'+row[1])
+    BC_consideredDrugs.append('http://research.tib.eu/clarify2020/entity/'+row[1])
 ############################
 #
 # Query constants
@@ -79,105 +79,105 @@ for row in rows:
 QUERY_DRUG_TO_DRUGS_INTERACTIONS ="""
 SELECT * {{
 {{SELECT  ?effectorDrugCUI ?affectdDrugCUI  ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact 'Symmetric' AS ?type ?description   WHERE {{  
-                                           ?interaction_symm a <http://clarify2020.eu/vocab/SymmetricDrugDrugInteraction>. 
-                                           ?interaction a <http://clarify2020.eu/vocab/DrugDrugInteraction>.
+                                           ?interaction_symm a <http://research.tib.eu/clarify2020/vocab/SymmetricDrugDrugInteraction>. 
+                                           ?interaction a <http://research.tib.eu/clarify2020/vocab/DrugDrugInteraction>.
                                            ?interaction_symm ?p ?interaction.
-                                           ?interaction <http://clarify2020.eu/vocab/precipitant_drug_cui> ?effectorDrugCUI.
-                                           ?interaction <http://clarify2020.eu/vocab/object_drug_cui> ?affectdDrugCUI.
-                                           ?effectorDrugCUI <http://clarify2020.eu/vocab/annLabel> ?effectorDrugLabel.
-                                           ?affectdDrugCUI <http://clarify2020.eu/vocab/annLabel> ?affectdDrugLabel.
-                                            ?interaction <http://clarify2020.eu/vocab/effect_cui> ?adverse_cui.   
-                                            ?adverse_cui <http://clarify2020.eu/vocab/annLabel> ?adverse.
-                                            ?interaction <http://clarify2020.eu/vocab/impact> ?impact.  
-                                            ?interaction <http://clarify2020.eu/vocab/ddi_description> ?description.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/precipitant_drug_cui> ?effectorDrugCUI.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/object_drug_cui> ?affectdDrugCUI.
+                                           ?effectorDrugCUI <http://research.tib.eu/clarify2020/vocab/annLabel> ?effectorDrugLabel.
+                                           ?affectdDrugCUI <http://research.tib.eu/clarify2020/vocab/annLabel> ?affectdDrugLabel.
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/effect_cui> ?adverse_cui.   
+                                            ?adverse_cui <http://research.tib.eu/clarify2020/vocab/annLabel> ?adverse.
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/impact> ?impact.  
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/ddi_description> ?description.
                                             {0}
 UNION
 {{
 SELECT  ?effectorDrugCUI ?affectdDrugCUI ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact 'Symmetric' AS ?type ?description   WHERE {{  
-                                           ?interaction_symm a <http://clarify2020.eu/vocab/SymmetricDrugDrugInteraction>. 
-                                           ?interaction a <http://clarify2020.eu/vocab/DrugDrugInteraction>.
+                                           ?interaction_symm a <http://research.tib.eu/clarify2020/vocab/SymmetricDrugDrugInteraction>. 
+                                           ?interaction a <http://research.tib.eu/clarify2020/vocab/DrugDrugInteraction>.
                                            ?interaction_symm ?p ?interaction.
-                                           ?interaction <http://clarify2020.eu/vocab/precipitant_drug_cui> ?effectorDrugCUI.
-                                           ?interaction <http://clarify2020.eu/vocab/object_drug_cui> ?affectdDrugCUI.
-                                           ?effectorDrugCUI <http://clarify2020.eu/vocab/annLabel> ?effectorDrugLabel.
-                                           ?affectdDrugCUI <http://clarify2020.eu/vocab/annLabel> ?affectdDrugLabel.
-                                            ?interaction <http://clarify2020.eu/vocab/effect_cui> ?adverse_cui.   
-                                            ?adverse_cui <http://clarify2020.eu/vocab/annLabel> ?adverse.  
-                                            ?interaction <http://clarify2020.eu/vocab/impact> ?impact.    
-                                            ?interaction <http://clarify2020.eu/vocab/ddi_description> ?description.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/precipitant_drug_cui> ?effectorDrugCUI.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/object_drug_cui> ?affectdDrugCUI.
+                                           ?effectorDrugCUI <http://research.tib.eu/clarify2020/vocab/annLabel> ?effectorDrugLabel.
+                                           ?affectdDrugCUI <http://research.tib.eu/clarify2020/vocab/annLabel> ?affectdDrugLabel.
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/effect_cui> ?adverse_cui.   
+                                            ?adverse_cui <http://research.tib.eu/clarify2020/vocab/annLabel> ?adverse.  
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/impact> ?impact.    
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/ddi_description> ?description.
                                             {1}
 UNION
 {{ 
     SELECT  ?effectorDrugCUI ?affectdDrugCUI ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact 'NonSymmetric' AS ?type ?description   WHERE {{  
-                                           ?interaction_notsymm a <http://clarify2020.eu/vocab/NonSymmetricDrugDrugInteraction>. 
-                                           ?interaction a <http://clarify2020.eu/vocab/DrugDrugInteraction>.
+                                           ?interaction_notsymm a <http://research.tib.eu/clarify2020/vocab/NonSymmetricDrugDrugInteraction>. 
+                                           ?interaction a <http://research.tib.eu/clarify2020/vocab/DrugDrugInteraction>.
                                            ?interaction_notsymm ?p ?interaction.
-                                           ?interaction <http://clarify2020.eu/vocab/precipitant_drug_cui> ?effectorDrugCUI.
-                                           ?interaction <http://clarify2020.eu/vocab/object_drug_cui> ?affectdDrugCUI.
-                                           ?effectorDrugCUI <http://clarify2020.eu/vocab/annLabel> ?effectorDrugLabel.
-                                           ?affectdDrugCUI <http://clarify2020.eu/vocab/annLabel> ?affectdDrugLabel.
-                                           ?interaction <http://clarify2020.eu/vocab/effect_cui> ?adverse_cui.   
-                                            ?adverse_cui <http://clarify2020.eu/vocab/annLabel> ?adverse.
-                                            ?interaction <http://clarify2020.eu/vocab/impact> ?impact.     
-                                            ?interaction <http://clarify2020.eu/vocab/ddi_description> ?description.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/precipitant_drug_cui> ?effectorDrugCUI.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/object_drug_cui> ?affectdDrugCUI.
+                                           ?effectorDrugCUI <http://research.tib.eu/clarify2020/vocab/annLabel> ?effectorDrugLabel.
+                                           ?affectdDrugCUI <http://research.tib.eu/clarify2020/vocab/annLabel> ?affectdDrugLabel.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/effect_cui> ?adverse_cui.   
+                                            ?adverse_cui <http://research.tib.eu/clarify2020/vocab/annLabel> ?adverse.
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/impact> ?impact.     
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/ddi_description> ?description.
                                             {2}      
 UNION
 {{ 
     SELECT  ?effectorDrugCUI ?affectdDrugCUI ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact 'NonSymmetric' AS ?type ?description   WHERE {{  
-                                           ?interaction_notsymm a <http://clarify2020.eu/vocab/NonSymmetricDrugDrugInteraction>. 
-                                           ?interaction a <http://clarify2020.eu/vocab/DrugDrugInteraction>.
+                                           ?interaction_notsymm a <http://research.tib.eu/clarify2020/vocab/NonSymmetricDrugDrugInteraction>. 
+                                           ?interaction a <http://research.tib.eu/clarify2020/vocab/DrugDrugInteraction>.
                                            ?interaction_notsymm ?p ?interaction.
-                                           ?interaction <http://clarify2020.eu/vocab/precipitant_drug_cui> ?effectorDrugCUI.
-                                           ?interaction <http://clarify2020.eu/vocab/object_drug_cui> ?affectdDrugCUI.
-                                           ?effectorDrugCUI <http://clarify2020.eu/vocab/annLabel> ?effectorDrugLabel.
-                                           ?affectdDrugCUI <http://clarify2020.eu/vocab/annLabel> ?affectdDrugLabel.
-                                           ?interaction <http://clarify2020.eu/vocab/effect_cui> ?adverse_cui.   
-                                            ?adverse_cui <http://clarify2020.eu/vocab/annLabel> ?adverse.  
-                                            ?interaction <http://clarify2020.eu/vocab/impact> ?impact.     
-                                            ?interaction <http://clarify2020.eu/vocab/ddi_description> ?description.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/precipitant_drug_cui> ?effectorDrugCUI.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/object_drug_cui> ?affectdDrugCUI.
+                                           ?effectorDrugCUI <http://research.tib.eu/clarify2020/vocab/annLabel> ?effectorDrugLabel.
+                                           ?affectdDrugCUI <http://research.tib.eu/clarify2020/vocab/annLabel> ?affectdDrugLabel.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/effect_cui> ?adverse_cui.   
+                                            ?adverse_cui <http://research.tib.eu/clarify2020/vocab/annLabel> ?adverse.  
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/impact> ?impact.     
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/ddi_description> ?description.
                                             {3}                                              
 """
 
 
 QUERY_DRUG_TO_DRUGS_INTERACTIONS_PREDICTED ="""
 SELECT  * WHERE {  
-                                           ?interaction a <http://clarify2020.eu/vocab/DrugDrugPrediction>.
-                                           ?interaction <http://clarify2020.eu/vocab/interactor1> ?effectorDrug.
-                                           ?interaction <http://clarify2020.eu/vocab/interactor2> ?affectdDrug.
+                                           ?interaction a <http://research.tib.eu/clarify2020/vocab/DrugDrugPrediction>.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/hasInteractingDrug> ?effectorDrug.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/hasInteractingCategory> ?affectdDrug.
                                             ?affectdDrug owl:sameAs ?affectdDrugwithLabel.
                                             ?effectorDrug owl:sameAs ?effectorDrugwithlabel.
-                                            ?affectdDrugwithLabel <http://clarify2020.eu/vocab/hasCUIAnnotation> ?affectdDrugCUI.
-                                            ?effectorDrugwithlabel <http://clarify2020.eu/vocab/hasCUIAnnotation> ?effectorDrugCUI.
-                                           ?effectorDrug <http://clarify2020.eu/vocab/drugLabel> ?effectorDrugLabel.
-                                           ?affectdDrug <http://clarify2020.eu/vocab/drugLabel> ?affectdDrugLabel.
-                                          ?interaction <http://clarify2020.eu/vocab/confidence> ?confidence.
-                                           ?interaction <http://clarify2020.eu/vocab/predictionMethod> ?provenance.                             
+                                            ?affectdDrugwithLabel <http://research.tib.eu/clarify2020/vocab/hasCUIAnnotation> ?affectdDrugCUI.
+                                            ?effectorDrugwithlabel <http://research.tib.eu/clarify2020/vocab/hasCUIAnnotation> ?effectorDrugCUI.
+                                           ?effectorDrug <http://research.tib.eu/clarify2020/vocab/drugLabel> ?effectorDrugLabel.
+                                           ?affectdDrug <http://research.tib.eu/clarify2020/vocab/drugLabel> ?affectdDrugLabel.
+                                          ?interaction <http://research.tib.eu/clarify2020/vocab/confidence> ?confidence.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/predictionMethod> ?provenance.                             
 """
 
 QUERY_DRUGS_TO_DRUGS_INTERACTIONS ="""
 SELECT DISTINCT * {{
 {{SELECT  ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact ?description  WHERE {{
-                                           ?interaction a <http://clarify2020.eu/vocab/DrugDrugInteraction>.
-                                           ?interaction <http://clarify2020.eu/vocab/precipitant_drug_cui> <http://clarify2020.eu/entity/{0}>.
-                                           ?interaction <http://clarify2020.eu/vocab/object_drug_cui> <http://clarify2020.eu/entity/{1}>.
-                                           <http://clarify2020.eu/entity/{0}> <http://clarify2020.eu/vocab/annLabel> ?effectorDrugLabel.
-                                           <http://clarify2020.eu/entity/{1}> <http://clarify2020.eu/vocab/annLabel> ?affectdDrugLabel.
-                                            ?interaction <http://clarify2020.eu/vocab/effect_cui> ?adverse_cui.   
-                                            ?adverse_cui <http://clarify2020.eu/vocab/annLabel> ?adverse.  
-                                            ?interaction <http://clarify2020.eu/vocab/impact> ?impact.
-                                            ?interaction <http://clarify2020.eu/vocab/ddi_description> ?description.
+                                           ?interaction a <http://research.tib.eu/clarify2020/vocab/DrugDrugInteraction>.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/precipitant_drug_cui> <http://research.tib.eu/clarify2020/vocab/{0}>.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/object_drug_cui> <http://research.tib.eu/clarify2020/vocab/{1}>.
+                                           <http://research.tib.eu/clarify2020/vocab/{0}> <http://research.tib.eu/clarify2020/vocab/annLabel> ?effectorDrugLabel.
+                                           <http://research.tib.eu/clarify2020/vocab/{1}> <http://research.tib.eu/clarify2020/vocab/annLabel> ?affectdDrugLabel.
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/effect_cui> ?adverse_cui.   
+                                            ?adverse_cui <http://research.tib.eu/clarify2020/vocab/annLabel> ?adverse.  
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/impact> ?impact.
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/ddi_description> ?description.
    
 }}}} UNION 
 {{SELECT  ?effectorDrugLabel ?affectdDrugLabel ?adverse ?impact ?description WHERE {{  
-                                           ?interaction a <http://clarify2020.eu/vocab/DrugDrugInteraction>.
-                                           ?interaction <http://clarify2020.eu/vocab/precipitant_drug_cui> <http://clarify2020.eu/entity/{1}>.
-                                           ?interaction <http://clarify2020.eu/vocab/object_drug_cui> <http://clarify2020.eu/entity/{0}>.
-                                           <http://clarify2020.eu/entity/{1}> <http://clarify2020.eu/vocab/annLabel> ?effectorDrugLabel.
-                                           <http://clarify2020.eu/entity/{0}> <http://clarify2020.eu/vocab/annLabel> ?affectdDrugLabel.
-                                            ?interaction <http://clarify2020.eu/vocab/effect_cui> ?adverse_cui.   
-                                            ?adverse_cui <http://clarify2020.eu/vocab/annLabel> ?adverse.  
-                                            ?interaction <http://clarify2020.eu/vocab/impact> ?impact.
-                                            ?interaction <http://clarify2020.eu/vocab/ddi_description> ?description.
+                                           ?interaction a <http://research.tib.eu/clarify2020/vocab/DrugDrugInteraction>.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/precipitant_drug_cui> <http://research.tib.eu/clarify2020/vocab/{1}>.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/object_drug_cui> <http://research.tib.eu/clarify2020/vocab/{0}>.
+                                           <http://research.tib.eu/clarify2020/vocab/{1}> <http://research.tib.eu/clarify2020/vocab/annLabel> ?effectorDrugLabel.
+                                           <http://research.tib.eu/clarify2020/vocab/{0}> <http://research.tib.eu/clarify2020/vocab/annLabel> ?affectdDrugLabel.
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/effect_cui> ?adverse_cui.   
+                                            ?adverse_cui <http://research.tib.eu/clarify2020/vocab/annLabel> ?adverse.  
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/impact> ?impact.
+                                            ?interaction <http://research.tib.eu/clarify2020/vocab/ddi_description> ?description.
 }}}}}}                                     
 """
 
@@ -185,30 +185,30 @@ SELECT DISTINCT * {{
 QUERY_DRUGS_TO_DRUGS_INTERACTIONS_PREDICTED ="""
 SELECT * {{
 {{SELECT DISTINCT ?effectorDrugLabel ?affectdDrugLabel ?confidence ?provenance  WHERE {{
-                                           ?interaction a <http://clarify2020.eu/vocab/DrugDrugPrediction>.
-                                           ?interaction <http://clarify2020.eu/vocab/interactor1> ?effectorDrug.
-                                           ?interaction <http://clarify2020.eu/vocab/interactor2> ?affectdDrug.
+                                           ?interaction a <http://research.tib.eu/clarify2020/vocab/DrugDrugPrediction>.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/hasInteractingDrug> ?effectorDrug.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/hasInteractingCategory> ?affectdDrug.
                                            ?affectdDrug owl:sameAs ?affectdDrugwithLabel.
                                            ?effectorDrug owl:sameAs ?effectorDrugwithLabel.
-                                           ?affectdDrugwithLabel <http://clarify2020.eu/vocab/hasCUIAnnotation> <http://clarify2020.eu/entity/{0}>.
-                                           ?effectorDrugwithLabel <http://clarify2020.eu/vocab/hasCUIAnnotation> <http://clarify2020.eu/entity/{1}>.
-                                           ?effectorDrug <http://clarify2020.eu/vocab/drugLabel> ?effectorDrugLabel.
-                                           ?affectdDrug <http://clarify2020.eu/vocab/drugLabel> ?affectdDrugLabel.
-                                          ?interaction <http://clarify2020.eu/vocab/confidence> ?confidence.
-                                           ?interaction <http://clarify2020.eu/vocab/predictionMethod> ?provenance.         
+                                           ?affectdDrugwithLabel <http://research.tib.eu/clarify2020/vocab/hasCUIAnnotation> <http://research.tib.eu/clarify2020/vocab/{0}>.
+                                           ?effectorDrugwithLabel <http://research.tib.eu/clarify2020/vocab/hasCUIAnnotation> <http://research.tib.eu/clarify2020/vocab/{1}>.
+                                           ?effectorDrug <http://research.tib.eu/clarify2020/vocab/drugLabel> ?effectorDrugLabel.
+                                           ?affectdDrug <http://research.tib.eu/clarify2020/vocab/drugLabel> ?affectdDrugLabel.
+                                          ?interaction <http://research.tib.eu/clarify2020/vocab/confidence> ?confidence.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/predictionMethod> ?provenance.         
 }}}} UNION 
 {{SELECT DISTINCT ?effectorDrugLabel ?affectdDrugLabel ?confidence ?provenance  WHERE {{  
-                                           ?interaction a <http://clarify2020.eu/vocab/DrugDrugPrediction>.
-                                           ?interaction <http://clarify2020.eu/vocab/interactor1> ?effectorDrug.
-                                           ?interaction <http://clarify2020.eu/vocab/interactor2> ?affectdDrug.
+                                           ?interaction a <http://research.tib.eu/clarify2020/vocab/DrugDrugPrediction>.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/hasInteractingDrug> ?effectorDrug.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/hasInteractingCategory> ?affectdDrug.
                                            ?affectdDrug owl:sameAs ?affectdDrugwithLabel.
                                            ?effectorDrug owl:sameAs ?effectorDrugwithLabel.
-                                           ?affectdDrugwithLabel <http://clarify2020.eu/vocab/hasCUIAnnotation> <http://clarify2020.eu/entity/{1}>.
-                                           ?effectorDrugwithLabel <http://clarify2020.eu/vocab/hasCUIAnnotation> <http://clarify2020.eu/entity/{0}>.
-                                           ?effectorDrug <http://clarify2020.eu/vocab/drugLabel> ?effectorDrugLabel.
-                                           ?affectdDrug <http://clarify2020.eu/vocab/drugLabel> ?affectdDrugLabel.
-                                          ?interaction <http://clarify2020.eu/vocab/confidence> ?confidence.
-                                           ?interaction <http://clarify2020.eu/vocab/predictionMethod> ?provenance.     
+                                           ?affectdDrugwithLabel <http://research.tib.eu/clarify2020/vocab/hasCUIAnnotation> <http://research.tib.eu/clarify2020/vocab/{1}>.
+                                           ?effectorDrugwithLabel <http://research.tib.eu/clarify2020/vocab/hasCUIAnnotation> <http://research.tib.eu/clarify2020/vocab/{0}>.
+                                           ?effectorDrug <http://research.tib.eu/clarify2020/vocab/drugLabel> ?effectorDrugLabel.
+                                           ?affectdDrug <http://research.tib.eu/clarify2020/vocab/drugLabel> ?affectdDrugLabel.
+                                          ?interaction <http://research.tib.eu/clarify2020/vocab/confidence> ?confidence.
+                                           ?interaction <http://research.tib.eu/clarify2020/vocab/predictionMethod> ?provenance.     
 }}}}}}                                     
 """
 
@@ -216,9 +216,9 @@ QUERY_DRUG_TO_MOA="""
 select distinct  ?drug ?drugLabel ?moa WHERE 
 {{
 ?drug owl:sameAs ?drugwithLabel.
-?drugwithLabel <http://clarify2020.eu/vocab/hasCUIAnnotation> <http://clarify2020.eu/entity/{0}>.
-?drug <http://clarify2020.eu/vocab/drugsMechanismOfAction> ?moa .
-?drug <http://clarify2020.eu/vocab/drugLabel> ?drugLabel.
+?drugwithLabel <http://research.tib.eu/clarify2020/vocab/hasCUIAnnotation> <http://research.tib.eu/clarify2020/entity/{0}>.
+?drug <http://research.tib.eu/clarify2020/vocab/drugsMechanismOfAction> ?moa .
+?drug <http://research.tib.eu/clarify2020/vocab/drugLabel> ?drugLabel.
 }}
 """
 
@@ -226,9 +226,9 @@ QUERY_DRUG_TO_absorption="""
 select distinct  ?drug ?drugLabel ?absorption WHERE 
 {{
 ?drug owl:sameAs ?drugwithLabel.
-?drugwithLabel <http://clarify2020.eu/vocab/hasCUIAnnotation> <http://clarify2020.eu/entity/{0}>.
-?drug <http://clarify2020.eu/vocab/drugAbsorption> ?absorption .
-?drug <http://clarify2020.eu/vocab/drugLabel> ?drugLabel.
+?drugwithLabel <http://research.tib.eu/clarify2020/vocab/hasCUIAnnotation> <http://research.tib.eu/clarify2020/entity/{0}>.
+?drug <http://research.tib.eu/clarify2020/vocab/drugAbsorption> ?absorption .
+?drug <http://research.tib.eu/clarify2020/vocab/drugLabel> ?drugLabel.
 }}
 """
 
@@ -270,7 +270,7 @@ def drug2_interactions_query(drug,limit,page,all_drugs,cancer):
     
         
     query_1+="FILTER(?affectdDrugCUI in ("
-    query_1+="<http://clarify2020.eu/entity/"+drug+">))"
+    query_1+="<http://research.tib.eu/clarify2020/entity/"+drug+">))"
     
     if all_drugs==0:
         query_1+="FILTER(?effectorDrugCUI in ("
@@ -291,7 +291,7 @@ def drug2_interactions_query(drug,limit,page,all_drugs,cancer):
 
         
     query_2+="FILTER(?effectorDrugCUI in ("
-    query_2+="<http://clarify2020.eu/entity/"+drug+">))"
+    query_2+="<http://research.tib.eu/clarify2020/entity/"+drug+">))"
     
     if all_drugs==0:
         query_2+="FILTER(?affectdDrugCUI in ("
@@ -307,7 +307,7 @@ def drug2_interactions_query(drug,limit,page,all_drugs,cancer):
  
         
     query_3+="FILTER(?affectdDrugCUI in ("
-    query_3+="<http://clarify2020.eu/entity/"+drug+">))"
+    query_3+="<http://research.tib.eu/clarify2020/entity/"+drug+">))"
     
     if all_drugs==0:
         query_3+="FILTER(?effectorDrugCUI in ("
@@ -328,7 +328,7 @@ def drug2_interactions_query(drug,limit,page,all_drugs,cancer):
   
         
     query_4+="FILTER(?effectorDrugCUI in ("
-    query_4+="<http://clarify2020.eu/entity/"+drug+">))"
+    query_4+="<http://research.tib.eu/clarify2020/entity/"+drug+">))"
     
     if all_drugs==0:
         query_4+="FILTER(?affectdDrugCUI in ("
@@ -353,7 +353,7 @@ def drug2_interactions_query(drug,limit,page,all_drugs,cancer):
 def drug2_interactions_predicted_query(drug,limit,page,all_drugs):
     query=QUERY_DRUG_TO_DRUGS_INTERACTIONS_PREDICTED
     query+="FILTER(?affectdDrugCUI in ("
-    query+="<http://clarify2020.eu/entity/"+drug+">"
+    query+="<http://research.tib.eu/clarify2020/entity/"+drug+">"
     
     '''if all_drugs==0:
         query+=","
@@ -433,15 +433,15 @@ def proccesing_response(input_dicc, target,limit,page,all_drugs,cancer):
                             if result["type"]["value"]=='Symmetric':
                                 interaction["Drug1"]=result["effectorDrugLabel"]["value"]
                                 interaction["Drug2"]=result["affectdDrugLabel"]["value"]
-                                interaction["effect"]=result["adverse"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
-                                interaction["impact"]=result["impact"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
+                                interaction["effect"]=result["adverse"]["value"].replace('http://research.tib.eu/clarify2020/entity/','').replace('_',' ')
+                                interaction["impact"]=result["impact"]["value"].replace('http://research.tib.eu/clarify2020/entity/','').replace('_',' ')
                                 interaction["description"]=result["description"]["value"]
                                 drugInteractions[drug]["DDI"]["Pharmacodynamic"].append(interaction)
                             else:     
                                 interaction["effectorDrug"]=result["effectorDrugLabel"]["value"]
                                 interaction["affectdDrug"]=result["affectdDrugLabel"]["value"]
-                                interaction["effect"]=result["adverse"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
-                                interaction["impact"]=result["impact"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
+                                interaction["effect"]=result["adverse"]["value"].replace('http://research.tib.eu/clarify2020/entity/','').replace('_',' ')
+                                interaction["impact"]=result["impact"]["value"].replace('http://research.tib.eu/clarify2020/entity/','').replace('_',' ')
                                 interaction["description"]=result["description"]["value"]
                                 drugInteractions[drug]["DDI"]["Pharmacokinetic"].append(interaction)
                 results['response']=drugInteractions
@@ -464,8 +464,8 @@ def proccesing_response(input_dicc, target,limit,page,all_drugs,cancer):
                                 interaction=dict()
                                 interaction["effectorDrug"]=result["effectorDrugLabel"]["value"]
                                 interaction["affectdDrug"]=result["affectdDrugLabel"]["value"]
-                                interaction["effect"]=result["adverse"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
-                                interaction["impact"]=result["impact"]["value"].replace('http://clarify2020.eu/entity/','').replace('_',' ')
+                                interaction["effect"]=result["adverse"]["value"].replace('http://research.tib.eu/clarify2020/entity/','').replace('_',' ')
+                                interaction["impact"]=result["impact"]["value"].replace('http://research.tib.eu/clarify2020/entity/','').replace('_',' ')
                                 interaction["description"]=result["description"]["value"]
                                 if interaction not in drugInteractions[str(drug_pair)]["DDIS"]:
                                     drugInteractions[str(drug_pair)]["DDIS"].append(interaction)
@@ -598,18 +598,18 @@ def run_exploration_api():
 def get_oncological_drugs_query(cancer):
     if cancer=="LC":
         query="""select distinct ?drugLabel ?cui where 
-{?drug a <http://clarify2020.eu/vocab/LungCancerOncologicalDrug>.
-?drug <http://clarify2020.eu/vocab/drugLabel> ?drugLabel.
-?drug <http://clarify2020.eu/vocab/hasCUIAnnotation> ?ann.
-?ann <http://clarify2020.eu/vocab/annID> ?cui.
+{?drug a <http://research.tib.eu/clarify2020/vocab/LungCancerOncologicalDrug>.
+?drug <http://research.tib.eu/clarify2020/vocab/drugLabel> ?drugLabel.
+?drug <http://research.tib.eu/clarify2020/vocab/hasCUIAnnotation> ?ann.
+?ann <http://research.tib.eu/clarify2020/vocab/annID> ?cui.
 } 
     """
     elif cancer=="BC":
         query="""select distinct ?drugLabel ?cui where 
-{?drug a <http://clarify2020.eu/vocab/BreastCancerOncologicalDrug>.
-?drug <http://clarify2020.eu/vocab/drugLabel> ?drugLabel.
-?drug <http://clarify2020.eu/vocab/hasCUIAnnotation> ?ann.
-?ann <http://clarify2020.eu/vocab/annID> ?cui.
+{?drug a <http://research.tib.eu/clarify2020/vocab/BreastCancerOncologicalDrug>.
+?drug <http://research.tib.eu/clarify2020/vocab/drugLabel> ?drugLabel.
+?drug <http://research.tib.eu/clarify2020/vocab/hasCUIAnnotation> ?ann.
+?ann <http://research.tib.eu/clarify2020/vocab/annID> ?cui.
 } 
 """
     qresults = execute_query(query,0,0)
@@ -624,10 +624,10 @@ def get_oncological_drugs_query(cancer):
 
 def get_nononcological_drugs_query():
     query="""select distinct ?drugLabel ?cui where 
-{?drug a <http://clarify2020.eu/vocab/LungCancerNonOncologicalDrug>.
-?drug <http://clarify2020.eu/vocab/drugLabel> ?drugLabel.
-?drug <http://clarify2020.eu/vocab/hasCUIAnnotation> ?ann.
-?ann <http://clarify2020.eu/vocab/annID> ?cui.
+{?drug a <http://research.tib.eu/clarify2020/vocab/LungCancerNonOncologicalDrug>.
+?drug <http://research.tib.eu/clarify2020/vocab/drugLabel> ?drugLabel.
+?drug <http://research.tib.eu/clarify2020/vocab/hasCUIAnnotation> ?ann.
+?ann <http://research.tib.eu/clarify2020/vocab/annID> ?cui.
 } 
     """
     qresults = execute_query(query)
