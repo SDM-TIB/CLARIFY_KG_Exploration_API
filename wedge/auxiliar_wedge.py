@@ -1,4 +1,4 @@
-# import json
+import json
 import pandas as pd
 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -8,24 +8,25 @@ from pyDatalog.pyDatalog import assert_fact, load, ask
 from SPARQLWrapper import SPARQLWrapper, JSON
 from math import comb
 import os
-# os.environ["ENDPOINT"]='https://labs.tib.eu/sdm/clarify-kg-7-1/sparql'
+# os.environ["ENDPOINT"]='https://labs.tib.eu/sdm/clarify_kg/sparql'
 
 
 def build_query_clarify(input_cui):
-    input_cui_uri = ','.join(['<http://clarify2020.eu/entity/' + cui + '>' for cui in input_cui])
+    input_cui_uri = ','.join(['<http://research.tib.eu/clarify2020/entity/' + cui + '>' for cui in input_cui])
     query = """
+    prefix clarify: <http://research.tib.eu/clarify2020/vocab/>
     select distinct ?EffectorDrugLabel ?AffectedDrugLabel ?Effect ?Impact ?precipitantDrug ?objectDrug ?type
         where {
-        {{?s a <http://clarify2020.eu/vocab/DrugDrugInteraction> .  BIND('Pharmacokinetics' as ?type)} 
-        UNION {?sim a <http://clarify2020.eu/vocab/SymmetricDrugDrugInteraction> . 
+        {{?s a clarify:DrugDrugInteraction .  BIND('Pharmacokinetics' as ?type)} 
+        UNION {?sim a clarify:SymmetricDrugDrugInteraction . 
                             ?sim <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?s.BIND('Pharmadynamics' as ?type) }}
-        ?s <http://clarify2020.eu/vocab/effect_cui> ?o . 
-        ?o <http://clarify2020.eu/vocab/annLabel> ?Effect . 
-        ?s <http://clarify2020.eu/vocab/impact> ?Impact .
-        ?s <http://clarify2020.eu/vocab/precipitant_drug_cui> ?precipitantDrug .
-        ?s <http://clarify2020.eu/vocab/object_drug_cui> ?objectDrug .
-        ?precipitantDrug <http://clarify2020.eu/vocab/annLabel> ?EffectorDrugLabel.
-        ?objectDrug <http://clarify2020.eu/vocab/annLabel> ?AffectedDrugLabel.
+        ?s clarify:effect_cui ?o . 
+        ?o clarify:annLabel ?Effect . 
+        ?s clarify:impact ?Impact .
+        ?s clarify:precipitant_drug_cui ?precipitantDrug .
+        ?s clarify:object_drug_cui ?objectDrug .
+        ?precipitantDrug clarify:annLabel ?EffectorDrugLabel.
+        ?objectDrug clarify:annLabel ?AffectedDrugLabel.
 
     FILTER (?precipitantDrug in (""" + input_cui_uri + """ ) && ?objectDrug in (""" + input_cui_uri + """))
     }"""
@@ -54,10 +55,11 @@ def rename_impact(impact):
 
 def get_Labels(input_cui, endpoint):
     labels = {}
-    input_cui_uri = ','.join(['<http://clarify2020.eu/entity/' + cui + '>' for cui in input_cui])
+    input_cui_uri = ','.join(['<http://research.tib.eu/clarify2020/entity/' + cui + '>' for cui in input_cui])
 
-    query = """select distinct ?Drug ?drugLabel \n 
-    where {?Drug <http://clarify2020.eu/vocab/annLabel> ?drugLabel.\n 
+    query = """prefix clarify: <http://research.tib.eu/clarify2020/vocab/>
+    select distinct ?Drug ?drugLabel
+    where {?Drug clarify:annLabel ?drugLabel.\n 
     FILTER (?Drug in (""" + input_cui_uri + """ ))}\n"""
 
     sparql = SPARQLWrapper(endpoint)
@@ -67,7 +69,7 @@ def get_Labels(input_cui, endpoint):
 
     data = results["results"]["bindings"]
     for row in data:
-        labels[row["Drug"]["value"].replace("http://clarify2020.eu/entity/", "")] = row["drugLabel"]["value"].lower()
+        labels[row["Drug"]["value"].replace("http://research.tib.eu/clarify2020/entity/", "")] = row["drugLabel"]["value"].lower()
 
     return list(labels.values())
 
@@ -84,23 +86,23 @@ def query_result_clarify(query, endpoint, labels):
         effect = r['Effect']['value']
         effect = store_pharmacokinetic_ddi(effect)
         dd['Effect'].append(effect.lower())
-        impact = r['Impact']['value'].replace('http://clarify2020.eu/entity/', '')
+        impact = r['Impact']['value'].replace('http://research.tib.eu/clarify2020/entity/', '')
         impact = rename_impact(impact)
         dd['Impact'].append(impact)
         dd['EffectorDrugLabel'].append(r['EffectorDrugLabel']['value'].lower())
         dd['AffectedDrugLabel'].append(r['AffectedDrugLabel']['value'].lower())
-        dd['precipitantDrug'].append(r['precipitantDrug']['value'].replace('http://clarify2020.eu/entity/', ''))
-        dd['objectDrug'].append(r['objectDrug']['value'].replace('http://clarify2020.eu/entity/', ''))
+        dd['precipitantDrug'].append(r['precipitantDrug']['value'].replace('http://research.tib.eu/clarify2020/entity/', ''))
+        dd['objectDrug'].append(r['objectDrug']['value'].replace('http://research.tib.eu/clarify2020/entity/', ''))
 
         if r['Effect']['value']=='Pharmadynamics':
             dd['Effect'].append(effect.lower())
-            impact = r['Impact']['value'].replace('http://clarify2020.eu/entity/', '')
+            impact = r['Impact']['value'].replace('http://research.tib.eu/clarify2020/entity/', '')
             impact = rename_impact(impact)
             dd['Impact'].append(impact)
             dd['EffectorDrugLabel'].append(r['AffectedDrugLabel']['value'].lower())
             dd['AffectedDrugLabel'].append(r['EffectorDrugLabel']['value'].lower())
-            dd['precipitantDrug'].append(r['objectDrug']['value'].replace('http://clarify2020.eu/entity/', ''))
-            dd['objectDrug'].append(r['precipitantDrug']['value'].replace('http://clarify2020.eu/entity/', ''))
+            dd['precipitantDrug'].append(r['objectDrug']['value'].replace('http://research.tib.eu/clarify2020/entity/', ''))
+            dd['objectDrug'].append(r['precipitantDrug']['value'].replace('http://research.tib.eu/clarify2020/entity/', ''))
 
     set_DDIs = pd.DataFrame(dd)
     set_DDIs = set_DDIs.loc[set_DDIs.EffectorDrugLabel.isin(labels)]
@@ -209,4 +211,5 @@ def discovering_knowledge(union, set_dsd_label):
 # 	}
 #     union, set_dsd_label = load_data(input_list)
 #     response = discovering_knowledge(union, set_dsd_label)
-#     print(json.dumps(response, indent=4))
+#     r = json.dumps(response, indent=4)
+#     print(r)
