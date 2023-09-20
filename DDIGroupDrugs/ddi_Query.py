@@ -42,7 +42,7 @@ def CreateLabels(OncologicalDrugs,Non_OncologicalDrugs,SPARQLEndpoint,Prefix,Lab
     listDrugs=listDrugs+ "," +CreateListDrugs(Non_OncologicalDrugs,Prefix)
 
     query= """select distinct ?Drug ?drugLabel \n 
-    where {?Drug <http://clarify2020.eu/vocab/annLabel> ?drugLabel.\n 
+    where {?Drug <http://research.tib.eu/clarify2020/vocab/annLabel> ?drugLabel.\n 
     FILTER (?Drug in (""" + listDrugs + """ ))}\n"""
 
     #print(query)
@@ -53,7 +53,7 @@ def CreateLabels(OncologicalDrugs,Non_OncologicalDrugs,SPARQLEndpoint,Prefix,Lab
 
     data=results["results"]["bindings"]
     for row in data:
-        Labels[row["Drug"]["value"].replace("http://clarify2020.eu/entity/","")]=row["drugLabel"]["value"]
+        Labels[row["Drug"]["value"].replace("http://research.tib.eu/clarify2020/entity/","")]=row["drugLabel"]["value"]
 
     return Labels
 
@@ -63,12 +63,12 @@ def CreateEDB(OncologicalDrugs,Non_OncologicalDrugs,SPARQLEndpoint,EDB,Prefix):
     listDrugs=listDrugs+ "," +CreateListDrugs(Non_OncologicalDrugs,Prefix)
 
     query= """select distinct ?precipitantDrug ?objectDrug ?effect ?impact \n 
-    where {?s a <http://clarify2020.eu/vocab/DrugDrugInteraction> .\n 
-    ?s <http://clarify2020.eu/vocab/effect_cui> ?o . \n 
-    ?o <http://clarify2020.eu/vocab/annLabel> ?effect. \n 
-    ?s <http://clarify2020.eu/vocab/impact> ?impact .\n 
-    ?s <http://clarify2020.eu/vocab/precipitant_drug_cui> ?precipitantDrug .\n 
-    ?s <http://clarify2020.eu/vocab/object_drug_cui> ?objectDrug 
+    where {?s a <http://research.tib.eu/clarify2020/vocab/DrugDrugInteraction> .\n 
+    ?s <http://research.tib.eu/clarify2020/vocab/effect_cui> ?o . \n 
+    ?o <http://research.tib.eu/clarify2020/vocab/annLabel> ?effect. \n 
+    ?s <http://research.tib.eu/clarify2020/vocab/impact> ?impact .\n 
+    ?s <http://research.tib.eu/clarify2020/vocab/precipitant_drug_cui> ?precipitantDrug .\n 
+    ?s <http://research.tib.eu/clarify2020/vocab/object_drug_cui> ?objectDrug 
     FILTER (?precipitantDrug in (""" + listDrugs + """ ) && ?objectDrug in (""" + listDrugs +  """))}\n"""
 
     print(query)
@@ -80,30 +80,30 @@ def CreateEDB(OncologicalDrugs,Non_OncologicalDrugs,SPARQLEndpoint,EDB,Prefix):
     data=results["results"]["bindings"]
     for row in data:
         if row["effect"]["value"] in ["Serum_concentration","Serum_concentration_of", "Serum_level"]:
-            if row["impact"]["value"].replace("http://clarify2020.eu/entity/","") in ["Increase","Higher","Worsening"]:
-               EDB["serum_increase"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://clarify2020.eu/entity/",""), row["objectDrug"]["value"].replace("http://clarify2020.eu/entity/",""),"serum_concentration","increase"))
+            if row["impact"]["value"].replace("http://research.tib.eu/clarify2020/entity/","") in ["Increase","Higher","Worsening"]:
+               EDB["serum_increase"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""), row["objectDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""),"serum_concentration","increase"))
             else:
-               EDB["serum_decrease"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://clarify2020.eu/entity/",""), row["objectDrug"]["value"].replace("http://clarify2020.eu/entity/",""),"serum_concentration","decrease"))
+               EDB["serum_decrease"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""), row["objectDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""),"serum_concentration","decrease"))
         else:
             if row["effect"]["value"] =="Metabolism":
-                if row["impact"]["value"].replace("http://clarify2020.eu/entity/","") in ["Increase","Higher","Worsening"]:
-               	    EDB["metabolism_increase"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://clarify2020.eu/entity/",""), row["objectDrug"]["value"].replace("http://clarify2020.eu/entity/",""),"metabolism","increase"))
+                if row["impact"]["value"].replace("http://research.tib.eu/clarify2020/entity/","") in ["Increase","Higher","Worsening"]:
+               	    EDB["metabolism_increase"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""), row["objectDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""),"metabolism","increase"))
                 else:
-                	EDB["metabolism_decrease"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://clarify2020.eu/entity/",""), row["objectDrug"]["value"].replace("http://clarify2020.eu/entity/",""),"metabolism","decrease"))
+                	EDB["metabolism_decrease"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""), row["objectDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""),"metabolism","decrease"))
             else:
-                if row["effect"]["value"].replace("http://clarify2020.eu/entity/","") in ["Excretion_rate","Excretory_function"]:
+                if row["effect"]["value"].replace("http://research.tib.eu/clarify2020/entity/","") in ["Excretion_rate","Excretory_function"]:
                     if row["impact"]["value"] in ["Increase","Higher","Worsening"]:
-                        EDB["excretion_increase"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://clarify2020.eu/entity/",""), row["objectDrug"]["value"].replace("http://clarify2020.eu/entity/",""),"excretation","increase"))
+                        EDB["excretion_increase"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""), row["objectDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""),"excretation","increase"))
                     else:
-                        EDB["excretion_decrease"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://clarify2020.eu/entity/",""), row["objectDrug"]["value"].replace("http://clarify2020.eu/entity/",""),"excretation","decrease"))
+                        EDB["excretion_decrease"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""), row["objectDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""),"excretation","decrease"))
                 else:
-                    if row["effect"]["value"].replace("http://clarify2020.eu/entity/","") in ["Process_of_absorption"]:
+                    if row["effect"]["value"].replace("http://research.tib.eu/clarify2020/entity/","") in ["Process_of_absorption"]:
                         if row["impact"]["value"] in ["Increase","Higher","Worsening"]:
-                           EDB["absorption_increase"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://clarify2020.eu/entity/",""),row["objectDrug"]["value"].replace("http://clarify2020.eu/entity/",""),"absoption","increase"))
+                           EDB["absorption_increase"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""),row["objectDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""),"absoption","increase"))
                         else:
-                           EDB["absorption_decrease"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://clarify2020.eu/entity/",""), row["objectDrug"]["value"].replace("http://clarify2020.eu/entity/",""),"absoption","decrease"))
+                           EDB["absorption_decrease"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""), row["objectDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""),"absoption","decrease"))
                     else:    
-                        EDB["DDI_AD"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://clarify2020.eu/entity/",""), row["objectDrug"]["value"].replace("http://clarify2020.eu/entity/",""),row["effect"]["value"],row["impact"]["value"].replace("http://clarify2020.eu/entity/","")))
+                        EDB["DDI_AD"].append(sideEffect(row["precipitantDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""), row["objectDrug"]["value"].replace("http://research.tib.eu/clarify2020/entity/",""),row["effect"]["value"],row["impact"]["value"].replace("http://research.tib.eu/clarify2020/entity/","")))
     return EDB
 
 def CreateListDrugs(Drugs,Prefix):
@@ -166,12 +166,12 @@ def WriteDDIs(EDB,Labels):
         for ddi in EDB[key]:
             if key in effects:
                 #listDDIs.append(ddiTuple(ddi.precipitantDrug,ddi.objectDrug,ddi.precipitantDrug + " " + effects[key] + " " + ddi.objectDrug))
-                listDDIs.append(Labels[ddi.precipitantDrug] + " " + effects[key].replace("http://clarify2020.eu/entity/","") + " " + Labels[ddi.objectDrug])
+                listDDIs.append(Labels[ddi.precipitantDrug] + " " + effects[key].replace("http://research.tib.eu/clarify2020/entity/","") + " " + Labels[ddi.objectDrug])
                 #print(Labels[ddi.precipitantDrug] + " " + effects[key] + " " + Labels[ddi.objectDrug])
 
             else:
                 #listDDIs.append(ddiTuple(ddi.precipitantDrug,ddi.objectDrug,ddi.precipitantDrug + " " + str(key) + " " + ddi.objectDrug))
-                listDDIs.append(Labels[ddi.precipitantDrug] + " " + ddi.effect + " " + ddi.impact.replace("http://clarify2020.eu/entity/","") + " " + Labels[ddi.objectDrug])
+                listDDIs.append(Labels[ddi.precipitantDrug] + " " + ddi.effect + " " + ddi.impact.replace("http://research.tib.eu/clarify2020/entity/","") + " " + Labels[ddi.objectDrug])
                 #print(Labels[ddi.precipitantDrug] + " " + ddi.effect + " " + ddi.impact + " " + Labels[ddi.objectDrug])
     return listDDIs
 
@@ -192,7 +192,7 @@ def WriteDrugEffects(IDB,Labels):
 
 def createJSON(SetOfDDIs,DrugEffects):
     results=dict()
-    results["DDIs"]=SetOfDDIs
+    results["DDIs"]=list(set(SetOfDDIs))
     results["DrugEffects"]=DrugEffects
 
     return results
@@ -239,7 +239,7 @@ def computingDDI(input_file):
         input_data = input_file
         onco_drugs=input_data["Input"]["OncologicalDrugs"]
         non_onco_drugs=input_data["Input"]["Non_OncologicalDrugs"]
-        return DDIs_Group_Drugs(onco_drugs,non_onco_drugs,os.environ["ENDPOINT"],"http://clarify2020.eu")
+        return DDIs_Group_Drugs(onco_drugs,non_onco_drugs,os.environ["ENDPOINT"],"http://research.tib.eu/clarify2020")
 
 if __name__ == '__main__':
     x=1
