@@ -770,6 +770,7 @@ The drug label and CUI id is provided for each drug
 curl --header "Content-Type: application/json" \
   --request GET \
   https://labs.tib.eu/sdm/clarify-exp/get_nononcological_drugs
+```
 
 # 13) DDIs Deduced API
 
