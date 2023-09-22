@@ -770,3 +770,48 @@ The drug label and CUI id is provided for each drug
 curl --header "Content-Type: application/json" \
   --request GET \
   https://labs.tib.eu/sdm/clarify-exp/get_nononcological_drugs
+
+# 13) DDIs Deduced API
+
+## Input
+List of CUIs for Oncological and NonOncological drugs
+
+```
+	{
+	     "Input":{"OncologicalDrugs":["C0015133"],"Non_OncologicalDrugs":["C0028978","C0061851"]}
+	}
+```
+## Output
+ List of DDI interactions and list of drugs effects
+ 
+ ```
+ {
+    "DDIs": [
+        "omeprazole can increase metabolism of etoposide_vp16",
+        "ondansetron can decrease metabolism of etoposide_vp16",
+        "omeprazole can decrease metabolism of etoposide_vp16",
+        "omeprazole can decrease metabolism of ondansetron"
+    ],
+    "DrugEffects": {
+        "C0015133": [
+            "The effectiveness of etoposide_vp16 is decreased because omeprazole can increase metabolism of etoposide_vp16",
+            "The toxicity of etoposide_vp16 is increased because ondansetron can decrease metabolism of etoposide_vp16",
+            "The toxicity of etoposide_vp16 is increased because omeprazole can decrease metabolism of etoposide_vp16"
+        ],
+        "C0061851": [
+            "The toxicity of ondansetron is increased because omeprazole can decrease metabolism of ondansetron"
+        ]
+    }
+}
+ ```
+
+## Post request example
+
+```
+curl --location --request POST 'https://labs.tib.eu/sdm/clarify-exp/get_DDI_deduced' \
+--header 'Content-Type: application/json' \
+--data-raw '	{
+	     "Input":{"OncologicalDrugs":["C0015133"],"Non_OncologicalDrugs":["C0028978","C0061851"]}
+
+	}'
+```
