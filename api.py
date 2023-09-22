@@ -682,7 +682,7 @@ def ddi_wedge():
 
 
 @app.route('/get_DDI_deduced', methods=['POST'])
-def ddi_wedge():
+def ddi_deduced():
     if (not request.json):
         abort(400)
     input_list = request.json
