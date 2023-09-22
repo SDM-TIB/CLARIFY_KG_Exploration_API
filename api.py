@@ -15,6 +15,7 @@ import csv
 from DDIGroupDrugs import ddi_Query
 from flask_cors import CORS
 from wedge import auxiliar_wedge
+from ddi_deduced import deduce_ddi
 
 
 logger = logging.getLogger(__name__)
@@ -674,6 +675,21 @@ def ddi_wedge():
     else:
         union, set_dsd_label = auxiliar_wedge.load_data(input_list)
         response = auxiliar_wedge.discovering_knowledge(union, set_dsd_label)
+        r = json.dumps(response, indent=4)
+    response = make_response(r, 200)
+    response.mimetype = "application/json"
+    return response
+
+
+@app.route('/get_DDI_deduced', methods=['POST'])
+def ddi_wedge():
+    if (not request.json):
+        abort(400)
+    input_list = request.json
+    if len(input_list) == 0:
+        r = "{results: 'Error in the input format'}"
+    else:
+        response = deduce_ddi.get_DDI(input_list)
         r = json.dumps(response, indent=4)
     response = make_response(r, 200)
     response.mimetype = "application/json"
